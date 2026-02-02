@@ -1,0 +1,46 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: auth-user-service
+
+  # database connection
+  datasource:
+    url: jdbc:postgresql://localhost:5432/job_board_auth_db
+    username: human
+    password: ahmed
+    driver-class-name: org.postgresql.Driver
+
+  #  jpa / hibernate
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  # Liquibase Configuration
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    enabled: true
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 830474a69ff1fd
+    password: 4898348e8874f5 # Use app password for Gmail
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+
+job-board:
+  jwt:
+    secret-key: "${JWT_SECRET:aazerty1234567}"
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000} # 1 hour default
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000} # 7 days default
+
+
+server:
+  port: 8081
