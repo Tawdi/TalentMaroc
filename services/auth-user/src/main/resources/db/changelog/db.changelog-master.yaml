@@ -1,0 +1,7 @@
+databaseChangeLog:
+
+  - include:
+      file: db/changelog/2026/01/29-01-changelog-1.yaml
+
+  - include:
+      file: db/changelog/2026/01/30-01-add-tokens-tables.yaml
