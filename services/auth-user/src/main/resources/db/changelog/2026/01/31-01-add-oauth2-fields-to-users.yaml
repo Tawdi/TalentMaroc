@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 31-01-add-oauth2-fields-to-users
+      author: system
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: provider
+                  type: varchar(20)
+                  remarks: "OAuth2 provider (GOOGLE, GITHUB, FACEBOOK, LOCAL)"
+              - column:
+                  name: provider_id
+                  type: varchar(255)
+                  remarks: "OAuth2 provider user ID"
+              - column:
+                  name: image_url
+                  type: varchar(512)
+                  remarks: "Profile image URL from OAuth2 provider"
+
+        - addNotNullConstraint:
+            tableName: users
+            columnName: provider
+            defaultNullValue: "LOCAL"
+
+        - sql:
+            sql: "UPDATE users SET provider = 'LOCAL' WHERE provider IS NULL"
+
+        - createIndex:
+            indexName: idx_users_provider
+            tableName: users
+            columns:
+              - column:
+                  name: provider
+
+        - createIndex:
+            indexName: idx_users_provider_id
+            tableName: users
+            columns:
+              - column:
+                  name: provider_id

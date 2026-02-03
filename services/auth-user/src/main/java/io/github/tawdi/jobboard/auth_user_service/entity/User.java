@@ -43,6 +43,11 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean enabled = false; // wait email validation
 
+    // OAuth2 fields
+    private String provider; // GOOGLE, GITHUB, FACEBOOK, LOCAL
+    private String providerId; // OAuth2 provider user ID
+    private String imageUrl; // Profile image from OAuth2 provider
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();

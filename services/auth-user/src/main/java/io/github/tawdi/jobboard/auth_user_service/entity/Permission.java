@@ -17,7 +17,7 @@ public class Permission {
 
     @Column(unique = true, nullable = false)
     private String name; // READ_PROFILE, CREATE_OFFER, etc.
-    
+
     @Column(length = 255)
     private String description;
 }
