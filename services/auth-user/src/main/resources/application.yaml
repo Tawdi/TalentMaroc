@@ -1,0 +1,116 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: auth-user-service
+
+
+
+  #    # OAuth2 Configuration
+  #    security:
+  #      oauth2:
+  #       client:
+  #
+
+  # database connection
+  datasource:
+    url: jdbc:postgresql://localhost:5432/job_board_auth_db
+    username: human
+    password: ahmed
+    driver-class-name: org.postgresql.Driver
+
+  #  jpa / hibernate
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  # Liquibase Configuration
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    enabled: true
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 830474a69ff1fd
+    password: 4898348e8874f5 # Use app password for Gmail
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
+
+  security:
+    oauth2:
+      client:
+        registration:
+          # Google OAuth2
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: Google
+
+          # GitHub OAuth2
+          github:
+            client-id: ${GITHUB_CLIENT_ID:your-github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:your-github-client-secret}
+            scope:
+              - read:user
+              - user:email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: GitHub
+
+          #          # Facebook OAuth2 (optional)
+          #          facebook:
+          #            client-id: ${FACEBOOK_CLIENT_ID:your-facebook-client-id}
+          #            client-secret: ${FACEBOOK_CLIENT_SECRET:your-facebook-client-secret}
+          #            scope:
+          #              - email
+          #              - public_profile
+          #            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          #            client-name: Facebook
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: id
+
+          #          facebook:
+          #            authorization-uri: https://www.facebook.com/v12.0/dialog/oauth
+          #            token-uri: https://graph.facebook.com/v12.0/oauth/access_token
+          #            user-info-uri: https://graph.facebook.com/me?fields=id,name,email
+          #            user-name-attribute: id
+
+
+
+
+job-board:
+  jwt:
+    secret-key: "${JWT_SECRET:aazerty1234567}"
+    expiration-ms: ${JWT_EXPIRATION_MS:3600000} # 1 hour default
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000} # 7 days default
+
+
+# OAuth2 Redirect URIs (for frontend)
+oauth2:
+  authorized-redirect-uris:
+    - http://localhost:3000/oauth2/redirect
+    - http://localhost:8080/oauth2/redirect
+    - http://localhost:4200/oauth2/redirect
+
+server:
+  port: 8081
