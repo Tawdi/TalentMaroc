@@ -1,0 +1,10 @@
+<div class="skeleton-wrapper">
+  @for (item of items(); track item) {
+    <div
+      [class]="skeletonClasses()"
+      [style.width]="width()"
+      [style.height]="height()">
+    </div>
+  }
+</div>
+
