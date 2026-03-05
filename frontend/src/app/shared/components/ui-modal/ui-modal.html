@@ -1,0 +1,35 @@
+@if (isOpen()) {
+  <div class="modal-backdrop animate-fade-in" (click)="handleBackdropClick()">
+    <div [class]="modalClasses()" (click)="handleContentClick($event)" class="animate-scale-in">
+
+      @if (title() || showClose()) {
+        <div class="modal-header">
+          @if (title()) {
+            <h3 class="modal-title">{{ title() }}</h3>
+          }
+
+          @if (showClose()) {
+            <button
+              type="button"
+              class="modal-close"
+              (click)="handleClose()"
+              aria-label="Close modal">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          }
+        </div>
+      }
+
+      <div class="modal-body">
+        <ng-content></ng-content>
+      </div>
+
+      <div class="modal-footer">
+        <ng-content select="[footer]"></ng-content>
+      </div>
+
+    </div>
+  </div>
+}
