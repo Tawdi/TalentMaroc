@@ -1,0 +1,12 @@
+.card-no-padding {
+  padding: 0;
+}
+
+.card-padding-sm {
+  padding: 0.75rem;
+}
+
+.card-padding-lg {
+  padding: 2rem;
+}
+
