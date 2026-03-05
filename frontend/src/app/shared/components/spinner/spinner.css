@@ -1,0 +1,92 @@
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.spinner-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.spinner-track {
+  opacity: 0.25;
+}
+
+.spinner-path {
+  opacity: 0.75;
+}
+
+/* Sizes */
+.spinner-xs {
+  width: 1rem;
+  height: 1rem;
+}
+
+.spinner-sm {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.spinner-md {
+  width: 2rem;
+  height: 2rem;
+}
+
+.spinner-lg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.spinner-xl {
+  width: 4rem;
+  height: 4rem;
+}
+
+/* Colors */
+.spinner-primary {
+  color: var(--primary);
+}
+
+.spinner-secondary {
+  color: var(--text-secondary);
+}
+
+.spinner-white {
+  color: #ffffff;
+}
+
+.spinner-current {
+  color: currentColor;
+}
+
+.spinner-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.spinner-fullscreen .spinner-label {
+  color: #ffffff;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
