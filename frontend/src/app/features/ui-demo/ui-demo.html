@@ -1,0 +1,358 @@
+<div class="demo-container">
+  <!-- Theme Toggle -->
+  <app-theme-toggle />
+
+  <!-- Header -->
+  <header class="demo-header animate-fade-in">
+    <h1>UI Components Library</h1>
+    <p>Angular 21 shared components with pure CSS theming</p>
+  </header>
+
+  <!-- ========== BUTTONS SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Buttons</h2>
+
+    <app-ui-card>
+      <h3 class="subsection-title">Button Variants</h3>
+      <div class="component-row">
+        <app-ui-button variant="primary" (clicked)="handleButtonClick()">Primary</app-ui-button>
+        <app-ui-button variant="secondary">Secondary</app-ui-button>
+        <app-ui-button variant="outline">Outline</app-ui-button>
+        <app-ui-button variant="ghost">Ghost</app-ui-button>
+        <app-ui-button variant="danger">Danger</app-ui-button>
+      </div>
+
+      <h3 class="subsection-title">Button Sizes</h3>
+      <div class="component-row align-center">
+        <app-ui-button size="sm">Small</app-ui-button>
+        <app-ui-button size="md">Medium</app-ui-button>
+        <app-ui-button size="lg">Large</app-ui-button>
+      </div>
+
+      <h3 class="subsection-title">Button States</h3>
+      <div class="component-row">
+        <app-ui-button [disabled]="true">Disabled</app-ui-button>
+        <app-ui-button [loading]="isLoading()" (clicked)="toggleLoading()">
+          @if (isLoading()) {
+            Loading...
+          } @else {
+            Click to Load
+          }
+        </app-ui-button>
+        <app-ui-button [fullWidth]="true" variant="primary">Full Width Button</app-ui-button>
+      </div>
+
+      <h3 class="subsection-title">With Tooltips</h3>
+      <div class="component-row">
+        <app-ui-button appTooltip="This is a tooltip!" tooltipPosition="top">Hover Me (Top)</app-ui-button>
+        <app-ui-button appTooltip="Bottom tooltip" tooltipPosition="bottom" variant="secondary">Hover Me (Bottom)</app-ui-button>
+        <app-ui-button appTooltip="Left tooltip" tooltipPosition="left" variant="outline">Hover Me (Left)</app-ui-button>
+        <app-ui-button appTooltip="Right tooltip" tooltipPosition="right" variant="ghost">Hover Me (Right)</app-ui-button>
+      </div>
+    </app-ui-card>
+  </section>
+
+  <!-- ========== INPUTS SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Form Inputs</h2>
+
+    <app-ui-card>
+      <div class="form-demo">
+        <app-ui-input
+          label="Email Address"
+          type="email"
+          placeholder="you@example.com"
+          [required]="true"
+          [(value)]="email"
+          [errorText]="emailError()"
+          helperText="We'll never share your email."
+        />
+
+        <app-ui-input
+          label="Password"
+          type="password"
+          placeholder="Enter your password"
+          [required]="true"
+          [(value)]="password"
+        />
+
+        <app-ui-input
+          label="Disabled Input"
+          placeholder="Can't edit this"
+          [disabled]="true"
+        />
+
+        <app-ui-input
+          label="Read Only Input"
+          [readonly]="true"
+          [value]="'This is read-only text'"
+        />
+
+        <app-ui-input
+          label="Search"
+          type="search"
+          placeholder="Search for jobs..."
+        />
+
+        <div class="form-actions">
+          <app-ui-button variant="primary" (clicked)="handleSubmit()">Submit Form</app-ui-button>
+          <app-ui-button variant="secondary">Cancel</app-ui-button>
+        </div>
+      </div>
+    </app-ui-card>
+  </section>
+
+  <!-- ========== CARDS SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Cards</h2>
+
+    <div class="card-grid">
+      <app-ui-card>
+        <h3 class="card-title">Basic Card</h3>
+        <p class="card-text">This is a simple card with default padding.</p>
+      </app-ui-card>
+
+      <app-ui-card [hoverable]="true">
+        <h3 class="card-title">Hoverable Card</h3>
+        <p class="card-text">Hover over this card to see the effect.</p>
+      </app-ui-card>
+
+      <app-ui-card padding="sm">
+        <h3 class="card-title">Small Padding</h3>
+        <p class="card-text">This card has small padding.</p>
+      </app-ui-card>
+
+      <app-ui-card padding="lg">
+        <h3 class="card-title">Large Padding</h3>
+        <p class="card-text">This card has large padding.</p>
+      </app-ui-card>
+
+      <app-ui-card [hoverable]="true">
+        <h3 class="card-title">Job Posting Example</h3>
+        <div class="job-card-content">
+          <div class="job-header">
+            <span class="job-company">TechCorp Inc.</span>
+            <app-ui-badge variant="success" [pill]="true">Remote</app-ui-badge>
+          </div>
+          <p class="card-text">Senior Frontend Developer position with competitive salary and benefits.</p>
+          <div class="job-tags">
+            <app-ui-badge variant="secondary" size="sm">Angular</app-ui-badge>
+            <app-ui-badge variant="secondary" size="sm">TypeScript</app-ui-badge>
+            <app-ui-badge variant="secondary" size="sm">CSS</app-ui-badge>
+          </div>
+          <div class="job-footer">
+            <span class="job-date">Posted 2 days ago</span>
+            <app-ui-button size="sm">Apply Now</app-ui-button>
+          </div>
+        </div>
+      </app-ui-card>
+    </div>
+  </section>
+
+  <!-- ========== BADGES SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Badges</h2>
+
+    <app-ui-card>
+      <h3 class="subsection-title">Badge Variants</h3>
+      <div class="component-row">
+        <app-ui-badge variant="primary">Primary</app-ui-badge>
+        <app-ui-badge variant="secondary">Secondary</app-ui-badge>
+        <app-ui-badge variant="success">Success</app-ui-badge>
+        <app-ui-badge variant="warning">Warning</app-ui-badge>
+        <app-ui-badge variant="error">Error</app-ui-badge>
+        <app-ui-badge variant="info">Info</app-ui-badge>
+      </div>
+
+      <h3 class="subsection-title">Badge Sizes</h3>
+      <div class="component-row align-center">
+        <app-ui-badge size="sm">Small</app-ui-badge>
+        <app-ui-badge size="md">Medium</app-ui-badge>
+        <app-ui-badge size="lg">Large</app-ui-badge>
+      </div>
+
+      <h3 class="subsection-title">Pill Badges</h3>
+      <div class="component-row">
+        <app-ui-badge variant="primary" [pill]="true">Primary Pill</app-ui-badge>
+        <app-ui-badge variant="success" [pill]="true">Active</app-ui-badge>
+        <app-ui-badge variant="warning" [pill]="true">Pending</app-ui-badge>
+        <app-ui-badge variant="error" [pill]="true">Closed</app-ui-badge>
+      </div>
+    </app-ui-card>
+  </section>
+
+  <!-- ========== ALERTS SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Alerts</h2>
+
+    <div class="alerts-stack">
+      @if (showInfoAlert()) {
+        <app-ui-alert type="info" title="Information" [dismissible]="true" (dismissed)="dismissAlert('info')">
+          This is an informational alert message.
+        </app-ui-alert>
+      }
+
+      @if (showSuccessAlert()) {
+        <app-ui-alert type="success" title="Success!" [dismissible]="true" (dismissed)="dismissAlert('success')">
+          Your application has been submitted successfully.
+        </app-ui-alert>
+      }
+
+      @if (showWarningAlert()) {
+        <app-ui-alert type="warning" title="Warning" [dismissible]="true" (dismissed)="dismissAlert('warning')">
+          Your session will expire in 5 minutes.
+        </app-ui-alert>
+      }
+
+      @if (showErrorAlert()) {
+        <app-ui-alert type="error" title="Error" [dismissible]="true" (dismissed)="dismissAlert('error')">
+          Failed to submit application. Please try again.
+        </app-ui-alert>
+      }
+
+      <app-ui-alert type="info">
+        This alert cannot be dismissed.
+      </app-ui-alert>
+    </div>
+  </section>
+
+  <!-- ========== DROPDOWN SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Dropdown</h2>
+
+    <app-ui-card>
+      <div class="component-row">
+        <app-ui-dropdown label="Select Option">
+          <button class="dropdown-item">Profile</button>
+          <button class="dropdown-item">Settings</button>
+          <button class="dropdown-item">My Applications</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item">Logout</button>
+        </app-ui-dropdown>
+
+        <app-ui-dropdown label="Job Filters" align="right">
+          <button class="dropdown-item">Full-time</button>
+          <button class="dropdown-item">Part-time</button>
+          <button class="dropdown-item">Contract</button>
+          <button class="dropdown-item">Remote</button>
+          <button class="dropdown-item">On-site</button>
+        </app-ui-dropdown>
+      </div>
+    </app-ui-card>
+  </section>
+
+  <!-- ========== MODAL SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Modal</h2>
+
+    <app-ui-card>
+      <div class="component-row">
+        <app-ui-button (clicked)="openModal()">Open Modal</app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-modal
+      [isOpen]="isModalOpen()"
+      title="Apply for Position"
+      (closed)="closeModal()">
+      <p>Are you sure you want to apply for this position?</p>
+      <p class="modal-description">Your profile information will be shared with the employer.</p>
+
+      <div footer>
+        <app-ui-button variant="secondary" (clicked)="closeModal()">Cancel</app-ui-button>
+        <app-ui-button variant="primary" (clicked)="closeModal()">Confirm Application</app-ui-button>
+      </div>
+    </app-ui-modal>
+  </section>
+
+  <!-- ========== SPINNER SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Spinners</h2>
+
+    <app-ui-card>
+      <h3 class="subsection-title">Spinner Sizes</h3>
+      <div class="component-row align-center">
+        <app-spinner size="xs" />
+        <app-spinner size="sm" />
+        <app-spinner size="md" />
+        <app-spinner size="lg" />
+        <app-spinner size="xl" />
+      </div>
+
+      <h3 class="subsection-title">Spinner Colors</h3>
+      <div class="component-row align-center">
+        <app-spinner color="primary" />
+        <app-spinner color="secondary" />
+        <div class="dark-bg">
+          <app-spinner color="white" />
+        </div>
+      </div>
+
+      <h3 class="subsection-title">With Label</h3>
+      <div class="component-row">
+        <app-spinner label="Loading jobs..." />
+      </div>
+    </app-ui-card>
+  </section>
+
+  <!-- ========== SKELETON SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Skeleton Loaders</h2>
+
+    <app-ui-card>
+      <h3 class="subsection-title">Text Skeleton</h3>
+      <app-skeleton type="text" [count]="3" />
+
+      <h3 class="subsection-title">Card Skeleton</h3>
+      <div class="skeleton-card">
+        <div class="skeleton-header">
+          <app-skeleton type="circle" width="3rem" height="3rem" />
+          <div class="skeleton-header-text">
+            <app-skeleton type="text" width="60%" />
+            <app-skeleton type="text" width="40%" height="0.75rem" />
+          </div>
+        </div>
+        <app-skeleton type="rectangle" height="8rem" />
+        <app-skeleton type="text" [count]="2" />
+      </div>
+
+      <h3 class="subsection-title">Job Card Skeleton</h3>
+      <div class="job-skeleton">
+        <div class="job-skeleton-row">
+          <app-skeleton type="text" width="70%" height="1.5rem" />
+          <app-skeleton type="text" width="4rem" height="1.5rem" />
+        </div>
+        <app-skeleton type="text" width="40%" height="0.875rem" />
+        <app-skeleton type="text" [count]="2" />
+        <div class="job-skeleton-tags">
+          <app-skeleton type="text" width="4rem" />
+          <app-skeleton type="text" width="5rem" />
+          <app-skeleton type="text" width="3rem" />
+        </div>
+      </div>
+    </app-ui-card>
+  </section>
+
+  <!-- ========== THEME DEMO SECTION ========== -->
+  <section class="demo-section animate-slide-up">
+    <h2 class="section-title">Theme Reactivity</h2>
+
+    <app-ui-card>
+      <p class="card-text">
+        All components automatically adapt to the current theme. Click the theme toggle
+        button in the top-right corner to switch between light and dark modes.
+      </p>
+      <p class="card-text">
+        The theme preference is saved to localStorage and persists across page reloads.
+      </p>
+      <div class="theme-demo-grid">
+        <div class="theme-color-box bg-primary">Primary</div>
+        <div class="theme-color-box bg-secondary">Secondary</div>
+        <div class="theme-color-box bg-background">Background</div>
+        <div class="theme-color-box bg-card">Card</div>
+      </div>
+    </app-ui-card>
+  </section>
+
+</div>
+
