@@ -106,10 +106,10 @@ public class DataInitializer {
             )))
             .build();
 
-        // STUDENT Role - Can apply to jobs
+        // CANDIDATE Role - Can apply to jobs
         Role studentRole = Role.builder()
-            .name("STUDENT")
-            .description("Student/Job seeker account")
+            .name("CANDIDATE")
+            .description("Student/ CANDIDATE /Job seeker account")
             .permissions(new HashSet<>(Arrays.asList(
                 readProfile, updateProfile, deleteProfile,
                 viewJobs, applyJob, viewApplications
@@ -127,6 +127,6 @@ public class DataInitializer {
             .build();
 
         roleRepository.saveAll(Arrays.asList(adminRole, companyRole, studentRole, userRole));
-        log.info("Initialized 4 roles: ADMIN, COMPANY, STUDENT, USER");
+        log.info("Initialized 4 roles: ADMIN, COMPANY, CANDIDATE, USER");
     }
 }
