@@ -79,7 +79,7 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
+        loadComponent: () => import('./features/dashboard/candidate-profile/candidate-profile').then(m => m.CandidateProfileComponent),
       },
       {
         path: 'settings',
