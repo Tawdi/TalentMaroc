@@ -1,0 +1,94 @@
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title"><app-icon name="briefcase" size="md" /> Work Experience</h2>
+    <app-ui-button variant="primary" size="sm" (clicked)="openAdd()"><app-icon name="plus" size="sm" /> Add Experience</app-ui-button>
+  </div>
+
+  @if (experiences().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <span class="empty-icon"><app-icon name="briefcase" size="xl" /></span>
+        <p>No work experience added yet.</p>
+        <app-ui-button variant="outline" size="sm" (clicked)="openAdd()">Add your first experience</app-ui-button>
+      </div>
+    </app-ui-card>
+  } @else {
+    @for (exp of experiences(); track exp.id) {
+      <app-ui-card>
+        <div class="exp-card">
+          <div class="exp-timeline">
+            <div class="timeline-dot"></div>
+          </div>
+          <div class="exp-content">
+            <div class="exp-header">
+              <div>
+                <h3 class="exp-title">{{ exp.title }}</h3>
+                <p class="exp-company">{{ exp.company }}</p>
+              </div>
+              <div class="exp-actions">
+                <button class="icon-btn" (click)="openEdit(exp)"><app-icon name="pencil" size="sm" /></button>
+                <button class="icon-btn danger" (click)="delete(exp)"><app-icon name="trash" size="sm" /></button>
+              </div>
+            </div>
+
+            <div class="exp-meta">
+              <app-ui-badge variant="info" size="sm" [pill]="true">
+                {{ contractLabels[exp.contractType] }}
+              </app-ui-badge>
+              <span class="exp-date">
+                {{ formatDate(exp.startDate) }} — {{ exp.currentJob ? 'Present' : formatDate(exp.endDate!) }}
+              </span>
+              @if (exp.location) {
+                <span class="exp-location"><app-icon name="map-pin" size="sm" /> {{ exp.location }}</span>
+              }
+            </div>
+
+            @if (exp.description) {
+              <p class="exp-description">{{ exp.description }}</p>
+            }
+          </div>
+        </div>
+      </app-ui-card>
+    }
+  }
+</div>
+
+<!-- Add/Edit Modal -->
+<app-ui-modal [isOpen]="isModalOpen()" [title]="editingExp() ? 'Edit Experience' : 'Add Experience'" size="lg" (closed)="close()">
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+  }
+  <form class="modal-form" (submit)="$event.preventDefault(); save()">
+    <app-ui-input label="Job Title" [required]="true" placeholder="e.g. Senior Software Developer" [(value)]="title" />
+    <div class="form-row">
+      <app-ui-input label="Company" [required]="true" placeholder="e.g. Tech Corp" [(value)]="company" />
+      <app-ui-input label="Location" placeholder="e.g. Casablanca, Morocco" [(value)]="location" />
+    </div>
+    <app-ui-select label="Contract Type" [required]="true" [options]="contractOptions" [(value)]="contractType" />
+    <app-ui-textarea label="Description" [rows]="3" placeholder="Describe your role and achievements..." [(value)]="description" />
+    <div class="form-row">
+      <app-ui-date-input label="Start Date" [required]="true" [(value)]="startDate" />
+      @if (!currentJob()) {
+        <app-ui-date-input label="End Date" [(value)]="endDate" />
+      }
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" [checked]="currentJob()" (change)="toggleCurrentJob($event)" />
+      I currently work here
+    </label>
+  </form>
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="close()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="save()">
+      {{ editingExp() ? 'Update' : 'Add' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirmation Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()" />
+

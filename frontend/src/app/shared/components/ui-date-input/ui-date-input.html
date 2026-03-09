@@ -1,0 +1,26 @@
+<div class="form-group">
+  @if (label()) {
+    <label [for]="id()" class="form-label" [class.required]="required()">
+      {{ label() }}
+    </label>
+  }
+
+  <input
+    type="date"
+    [id]="id()"
+    [class]="inputClasses()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [value]="value()"
+    [min]="min()"
+    [max]="max()"
+    (input)="handleInput($event)"
+  />
+
+  @if (errorText()) {
+    <span class="form-error">{{ errorText() }}</span>
+  } @else if (helperText()) {
+    <span class="form-helper">{{ helperText() }}</span>
+  }
+</div>
+

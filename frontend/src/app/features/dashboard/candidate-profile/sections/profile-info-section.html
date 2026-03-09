@@ -1,0 +1,74 @@
+<app-ui-card>
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">About</h2>
+      <app-ui-button variant="ghost" size="sm" (clicked)="openEdit()"><app-icon name="pencil" size="sm" /> Edit</app-ui-button>
+    </div>
+
+    @if (profile().about) {
+      <p class="about-text">{{ profile().about }}</p>
+    } @else {
+      <p class="empty-text">Add a short bio to tell employers about yourself.</p>
+    }
+
+    <div class="info-grid">
+      <div class="info-item">
+        <span class="info-label">Date of Birth</span>
+        <span class="info-value">{{ profile().dateOfBirth || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Phone</span>
+        <span class="info-value">{{ profile().phone || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">City</span>
+        <span class="info-value">{{ profile().address?.city || '—' }}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Country</span>
+        <span class="info-value">{{ profile().address?.country || '—' }}</span>
+      </div>
+    </div>
+  </div>
+</app-ui-card>
+
+<!-- Edit Modal -->
+<app-ui-modal [isOpen]="isEditing()" title="Edit Profile" size="lg" (closed)="closeEdit()">
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">
+      {{ error() }}
+    </app-ui-alert>
+  }
+
+  <form class="edit-form" (submit)="$event.preventDefault(); save()">
+    <div class="form-row">
+      <app-ui-input label="First Name" [required]="true" [(value)]="firstName" />
+      <app-ui-input label="Last Name" [required]="true" [(value)]="lastName" />
+    </div>
+
+    <app-ui-input label="Headline" placeholder="e.g. Senior Software Developer" [(value)]="headline" />
+    <app-ui-textarea label="About" [rows]="4" [(value)]="about" />
+
+    <div class="form-row">
+      <app-ui-input label="Phone" type="tel" [(value)]="phone" />
+      <app-ui-date-input label="Date of Birth" [(value)]="dateOfBirth" />
+    </div>
+
+    <h3 class="form-section-title">Address</h3>
+    <app-ui-input label="Street" [(value)]="street" />
+    <div class="form-row">
+      <app-ui-input label="City" [(value)]="city" />
+      <app-ui-input label="State" [(value)]="state" />
+    </div>
+    <div class="form-row">
+      <app-ui-input label="Zip Code" [(value)]="zipCode" />
+      <app-ui-input label="Country" [(value)]="country" />
+    </div>
+  </form>
+
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="closeEdit()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="save()">Save Changes</app-ui-button>
+  </div>
+</app-ui-modal>
+

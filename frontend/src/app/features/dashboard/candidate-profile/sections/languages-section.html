@@ -1,0 +1,60 @@
+<app-ui-card>
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title"><app-icon name="globe" size="md" /> Languages</h2>
+      <app-ui-button variant="ghost" size="sm" (clicked)="openAdd()"><app-icon name="plus" size="sm" /> Add</app-ui-button>
+    </div>
+
+    @if (languages().length === 0) {
+      <p class="empty-text">No languages added yet.</p>
+    } @else {
+      <div class="lang-list">
+        @for (lang of languages(); track lang.id) {
+          <div class="lang-item">
+            <div class="lang-info">
+              <span class="lang-name">{{ lang.language }}</span>
+              <app-ui-badge [variant]="getProfVariant(lang.proficiency)" size="sm" [pill]="true">
+                {{ profLabels[lang.proficiency] }}
+              </app-ui-badge>
+            </div>
+            @if (!compact()) {
+              <div class="lang-actions">
+                <button class="icon-btn" (click)="openEdit(lang)"><app-icon name="pencil" size="sm" /></button>
+                <button class="icon-btn danger" (click)="delete(lang)"><app-icon name="trash" size="sm" /></button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</app-ui-card>
+
+<app-ui-modal [isOpen]="isModalOpen()" [title]="editingLang() ? 'Edit Language' : 'Add Language'" size="sm" (closed)="close()">
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+  }
+  <div class="modal-form">
+    <app-ui-autocomplete
+      label="Language"
+      [required]="true"
+      placeholder="Search for a language..."
+      [options]="languageOptions"
+      [(value)]="langName" />
+    <app-ui-select label="Proficiency" [required]="true" [options]="profOptions" [(value)]="langProficiency" />
+  </div>
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="close()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="save()">
+      {{ editingLang() ? 'Update' : 'Add' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirmation Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()" />
+

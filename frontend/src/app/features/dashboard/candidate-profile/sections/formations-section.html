@@ -1,0 +1,85 @@
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title"><app-icon name="academic-cap" size="md" /> Education</h2>
+    <app-ui-button variant="primary" size="sm" (clicked)="openAdd()"><app-icon name="plus" size="sm" /> Add Education</app-ui-button>
+  </div>
+
+  @if (formations().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <span class="empty-icon"><app-icon name="academic-cap" size="xl" /></span>
+        <p>No education history added yet.</p>
+        <app-ui-button variant="outline" size="sm" (clicked)="openAdd()">Add your education</app-ui-button>
+      </div>
+    </app-ui-card>
+  } @else {
+    @for (f of formations(); track f.id) {
+      <app-ui-card>
+        <div class="edu-card">
+          <div class="edu-icon"><app-icon name="building" size="lg" /></div>
+          <div class="edu-content">
+            <div class="edu-header">
+              <div>
+                <h3 class="edu-degree">{{ f.degree }}</h3>
+                <p class="edu-institution">{{ f.institution }}</p>
+              </div>
+              <div class="edu-actions">
+                <button class="icon-btn" (click)="openEdit(f)"><app-icon name="pencil" size="sm" /></button>
+                <button class="icon-btn danger" (click)="delete(f)"><app-icon name="trash" size="sm" /></button>
+              </div>
+            </div>
+            <div class="edu-meta">
+              @if (f.fieldOfStudy) {
+                <span class="edu-field">{{ f.fieldOfStudy }}</span>
+              }
+              <span class="edu-date">
+                {{ formatDate(f.startDate) }} — {{ f.currentlyStudying ? 'Present' : formatDate(f.endDate!) }}
+              </span>
+            </div>
+            @if (f.description) {
+              <p class="edu-description">{{ f.description }}</p>
+            }
+          </div>
+        </div>
+      </app-ui-card>
+    }
+  }
+</div>
+
+<app-ui-modal [isOpen]="isModalOpen()" [title]="editingForm() ? 'Edit Education' : 'Add Education'" size="lg" (closed)="close()">
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+  }
+  <form class="modal-form" (submit)="$event.preventDefault(); save()">
+    <app-ui-input label="Institution" [required]="true" placeholder="e.g. MIT" [(value)]="institution" />
+    <div class="form-row">
+      <app-ui-input label="Degree" [required]="true" placeholder="e.g. Master of Science" [(value)]="degree" />
+      <app-ui-input label="Field of Study" placeholder="e.g. Computer Science" [(value)]="fieldOfStudy" />
+    </div>
+    <app-ui-textarea label="Description" [rows]="3" placeholder="Describe your studies..." [(value)]="description" />
+    <div class="form-row">
+      <app-ui-date-input label="Start Date" [required]="true" [(value)]="startDate" />
+      @if (!currentlyStudying()) {
+        <app-ui-date-input label="End Date" [(value)]="endDate" />
+      }
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" [checked]="currentlyStudying()" (change)="toggleCurrentlyStudying($event)" />
+      I'm currently studying here
+    </label>
+  </form>
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="close()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="save()">
+      {{ editingForm() ? 'Update' : 'Add' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirmation Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()" />
+

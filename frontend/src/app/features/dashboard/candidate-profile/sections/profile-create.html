@@ -1,0 +1,51 @@
+<div class="create-page">
+  <app-ui-card>
+    <div class="create-container">
+      <div class="create-header">
+        <div class="header-icon"><app-icon name="user" size="xl" /></div>
+        <h1>Create Your Profile</h1>
+        <p>Let's get started! Fill in your basic information to create your candidate profile.</p>
+      </div>
+
+      @if (error()) {
+        <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">
+          {{ error() }}
+        </app-ui-alert>
+      }
+
+      <form class="create-form" (submit)="$event.preventDefault(); submit()">
+        <div class="form-row">
+          <app-ui-input label="First Name" [required]="true" placeholder="John"
+            [(value)]="firstName" />
+          <app-ui-input label="Last Name" [required]="true" placeholder="Doe"
+            [(value)]="lastName" />
+        </div>
+
+        <app-ui-input label="Headline" placeholder="e.g. Senior Software Developer"
+          [(value)]="headline" />
+
+        <app-ui-textarea label="About" placeholder="Tell us about yourself..."
+          [rows]="3" [(value)]="about" />
+
+        <div class="form-row">
+          <app-ui-input label="Phone" type="tel" placeholder="+212 6XX XXX XXX"
+            [(value)]="phone" />
+          <app-ui-date-input label="Date of Birth" [(value)]="dateOfBirth" />
+        </div>
+
+        <div class="form-row">
+          <app-ui-input label="City" placeholder="Casablanca" [(value)]="city" />
+          <app-ui-input label="Country" placeholder="Morocco" [(value)]="country" />
+        </div>
+
+        <div class="form-actions">
+          <app-ui-button type="submit" variant="primary" size="lg" [loading]="saving()"
+            [fullWidth]="true" (clicked)="submit()">
+            Create Profile
+          </app-ui-button>
+        </div>
+      </form>
+    </div>
+  </app-ui-card>
+</div>
+

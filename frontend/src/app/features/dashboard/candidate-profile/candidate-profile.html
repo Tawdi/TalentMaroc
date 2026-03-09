@@ -1,0 +1,172 @@
+<!-- Loading State -->
+@if (isLoading()) {
+  <div class="profile-page">
+    <div class="profile-header-skeleton">
+      <app-skeleton type="circle" width="6rem" height="6rem" />
+      <div class="skeleton-text-group">
+        <app-skeleton width="200px" height="1.5rem" />
+        <app-skeleton width="300px" height="1rem" />
+        <app-skeleton width="150px" height="1rem" />
+      </div>
+    </div>
+    <div class="skeleton-grid">
+      <app-skeleton type="rectangle" height="200px" />
+      <app-skeleton type="rectangle" height="200px" />
+    </div>
+  </div>
+}
+
+<!-- Error State -->
+@else if (error()) {
+  <div class="profile-page">
+    <app-ui-alert type="error" [title]="'Error'">
+      {{ error() }}
+    </app-ui-alert>
+    <div class="center-action">
+      <app-ui-button variant="primary" (clicked)="loadProfile()">Retry</app-ui-button>
+    </div>
+  </div>
+}
+
+<!-- Profile Not Found → Create -->
+@else if (profileNotFound()) {
+  <app-profile-create [userId]="userId()" (created)="onProfileCreated($event)" />
+}
+
+<!-- Profile Loaded -->
+@else if (profile(); as p) {
+  <div class="profile-page">
+
+    <!-- ===== Header Card ===== -->
+    <app-ui-card>
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          @if (p.photoUrl) {
+            <img [src]="p.photoUrl" [alt]="fullName()" class="avatar-img" />
+          } @else {
+            <div class="avatar-fallback">{{ initials() }}</div>
+          }
+        </div>
+
+        <div class="header-info">
+          <h1 class="profile-name">{{ fullName() }}</h1>
+          @if (p.headline) {
+            <p class="profile-headline">{{ p.headline }}</p>
+          }
+          <div class="profile-meta">
+            @if (p.address?.city) {
+              <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ p.address!.city }}@if (p.address!.country) {, {{ p.address!.country }}}</span>
+            }
+            @if (p.phone) {
+              <span class="meta-item"><app-icon name="phone" size="sm" /> {{ p.phone }}</span>
+            }
+            @if (p.cvOriginalName) {
+              <span class="meta-item cv-tag"><app-icon name="document" size="sm" /> CV uploaded</span>
+            }
+          </div>
+        </div>
+
+        <div class="header-completion">
+          <div class="completion-ring">
+            <svg viewBox="0 0 36 36">
+              <path class="ring-bg"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="ring-fill"
+                [attr.stroke-dasharray]="completionPercentage() + ', 100'"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="completion-text">{{ completionPercentage() }}%</span>
+          </div>
+          <span class="completion-label">Profile complete</span>
+        </div>
+      </div>
+    </app-ui-card>
+
+    <!-- ===== Tabs ===== -->
+    <nav class="profile-tabs">
+      @for (tab of tabs; track tab.key) {
+        <button
+          class="tab-btn"
+          [class.active]="activeTab() === tab.key"
+          (click)="setTab(tab.key)">
+          <app-icon [name]="$any(tab.icon)" size="sm" />
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    <!-- ===== Tab Content ===== -->
+    <div class="tab-content">
+
+      @switch (activeTab()) {
+        @case ('overview') {
+          <div class="overview-grid">
+            <div class="overview-main">
+              <app-profile-info-section
+                [profile]="p"
+                [userId]="userId()"
+                (updated)="onProfileUpdated($event)" />
+
+              <app-cv-section
+                [profile]="p"
+                [userId]="userId()"
+                (changed)="refreshProfile()" />
+            </div>
+
+            <div class="overview-sidebar">
+              <app-skills-section
+                [skills]="p.skills ?? []"
+                [userId]="userId()"
+                (changed)="refreshProfile()"
+                [compact]="true" />
+
+              <app-languages-section
+                [languages]="p.spokenLanguages ?? []"
+                [userId]="userId()"
+                (changed)="refreshProfile()"
+                [compact]="true" />
+            </div>
+          </div>
+        }
+
+        @case ('experience') {
+          <app-experiences-section
+            [experiences]="p.experiences ?? []"
+            [userId]="userId()"
+            (changed)="refreshProfile()" />
+        }
+
+        @case ('education') {
+          <app-formations-section
+            [formations]="p.formations ?? []"
+            [userId]="userId()"
+            (changed)="refreshProfile()" />
+        }
+
+        @case ('skills') {
+          <div class="two-col-grid">
+            <app-skills-section
+              [skills]="p.skills ?? []"
+              [userId]="userId()"
+              (changed)="refreshProfile()" />
+
+            <app-languages-section
+              [languages]="p.spokenLanguages ?? []"
+              [userId]="userId()"
+              (changed)="refreshProfile()" />
+          </div>
+        }
+
+        @case ('projects') {
+          <app-projects-section
+            [projects]="p.projects ?? []"
+            [userId]="userId()"
+            (changed)="refreshProfile()" />
+        }
+      }
+
+    </div>
+  </div>
+}
+
+

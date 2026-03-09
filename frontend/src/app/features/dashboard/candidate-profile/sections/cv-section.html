@@ -1,0 +1,49 @@
+<app-ui-card>
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title"><app-icon name="document" size="md" /> CV / Resume</h2>
+    </div>
+
+    @if (error()) {
+      <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+    }
+    @if (success()) {
+      <app-ui-alert type="success" [dismissible]="true" (dismissed)="success.set(null)">{{ success() }}</app-ui-alert>
+    }
+
+    @if (profile().cvOriginalName) {
+      <div class="cv-info">
+        <div class="cv-file">
+          <span class="cv-icon"><app-icon name="document" size="lg" /></span>
+          <div class="cv-details">
+            <span class="cv-name">{{ profile().cvOriginalName }}</span>
+            <span class="cv-hint">PDF document</span>
+          </div>
+        </div>
+        <div class="cv-actions">
+          <app-ui-button variant="outline" size="sm" (clicked)="download()"><app-icon name="arrow-down-tray" size="sm" /> Download</app-ui-button>
+          <app-ui-button variant="danger" size="sm" (clicked)="deleteCv()"><app-icon name="trash" size="sm" /> Delete</app-ui-button>
+        </div>
+      </div>
+    }
+
+    <div class="upload-zone" [class.uploading]="uploading()">
+      @if (uploading()) {
+        <div class="upload-spinner">
+          <span class="spinner-icon"><app-icon name="clock" size="lg" /></span>
+          <span>Uploading...</span>
+        </div>
+      } @else {
+        <label class="upload-label">
+          <input type="file" accept=".pdf" (change)="onFileSelected($event)" hidden />
+          <span class="upload-icon"><app-icon name="arrow-up-tray" size="lg" /></span>
+          <span class="upload-text">
+            {{ profile().cvOriginalName ? 'Replace CV' : 'Upload your CV' }}
+          </span>
+          <span class="upload-hint">PDF only, max 10MB</span>
+        </label>
+      }
+    </div>
+  </div>
+</app-ui-card>
+

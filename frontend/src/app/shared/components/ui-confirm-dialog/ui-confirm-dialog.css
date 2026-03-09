@@ -1,0 +1,46 @@
+.confirm-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.confirm-icon {
+  display: flex;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  align-items: center;
+}
+
+.confirm-icon.icon-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.confirm-icon.icon-warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.confirm-icon.icon-primary {
+  background: rgba(0, 173, 181, 0.1);
+  color: var(--primary);
+}
+
+.confirm-message {
+  text-align: center;
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  width: 100%;
+}
