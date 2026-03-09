@@ -1,0 +1,319 @@
+databaseChangeLog:
+
+  # ─── 1. candidate_profiles ─────────────────────────────────────────
+  - changeSet:
+      id: 20260305-001
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: candidate_profiles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: headline
+                  type: VARCHAR(255)
+              - column:
+                  name: about
+                  type: TEXT
+              - column:
+                  name: phone
+                  type: VARCHAR(30)
+              - column:
+                  name: date_of_birth
+                  type: DATE
+              - column:
+                  name: photo_url
+                  type: VARCHAR(500)
+              - column:
+                  name: cv_file_path
+                  type: VARCHAR(500)
+              - column:
+                  name: cv_original_name
+                  type: VARCHAR(255)
+              # embedded Address
+              - column:
+                  name: address_street
+                  type: VARCHAR(255)
+              - column:
+                  name: address_city
+                  type: VARCHAR(100)
+              - column:
+                  name: address_state
+                  type: VARCHAR(100)
+              - column:
+                  name: address_zip_code
+                  type: VARCHAR(20)
+              - column:
+                  name: address_country
+                  type: VARCHAR(100)
+              # auditing
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 2. experiences ────────────────────────────────────────────────
+  - changeSet:
+      id: 20260305-002
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: experiences
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: contract_type
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: current_job
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: profile_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_experience_profile
+                    references: candidate_profiles(id)
+                    deleteCascade: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 3. formations ────────────────────────────────────────────────
+  - changeSet:
+      id: 20260305-003
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: formations
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: institution
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: degree
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: field_of_study
+                  type: VARCHAR(255)
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: start_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: currently_studying
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: profile_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_formation_profile
+                    references: candidate_profiles(id)
+                    deleteCascade: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 4. skills ────────────────────────────────────────────────────
+  - changeSet:
+      id: 20260305-004
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: skills
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level
+                  type: VARCHAR(30)
+              - column:
+                  name: profile_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_skill_profile
+                    references: candidate_profiles(id)
+                    deleteCascade: true
+
+  # ─── 5. projects ──────────────────────────────────────────────────
+  - changeSet:
+      id: 20260305-005
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: projects
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: url
+                  type: VARCHAR(500)
+              - column:
+                  name: technologies
+                  type: VARCHAR(500)
+              - column:
+                  name: start_date
+                  type: DATE
+              - column:
+                  name: end_date
+                  type: DATE
+              - column:
+                  name: profile_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_project_profile
+                    references: candidate_profiles(id)
+                    deleteCascade: true
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 6. spoken_languages ──────────────────────────────────────────
+  - changeSet:
+      id: 20260305-006
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: spoken_languages
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: language
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: proficiency
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: profile_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_spoken_language_profile
+                    references: candidate_profiles(id)
+                    deleteCascade: true
+

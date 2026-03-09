@@ -35,6 +35,12 @@ spring:
                 - Path=/auth/**
               filters:
                 - StripPrefix=1
+            - id: candidate-profile-service
+              uri: lb://CANDIDATE-PROFILE-SERVICE
+              predicates:
+                - Path=/candidate-profile/**
+              filters:
+                - StripPrefix=1
 
 eureka:
   client:
