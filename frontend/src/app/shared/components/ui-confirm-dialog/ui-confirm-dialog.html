@@ -1,0 +1,32 @@
+<app-ui-modal
+  [isOpen]="isOpen()"
+  [title]="data().title"
+  size="sm"
+  [closeOnBackdrop]="false"
+  [showClose]="false"
+  (closed)="onCancel()">
+
+  <div class="confirm-content">
+    @if (data().icon) {
+      <div class="confirm-icon" [class]="'icon-' + data().variant">
+        <app-icon [name]="$any(data().icon)" size="lg" />
+      </div>
+    }
+
+    <p class="confirm-message">{{ data().message }}</p>
+  </div>
+
+  <div footer class="confirm-actions">
+    <app-ui-button
+      variant="outline"
+      (clicked)="onCancel()">
+      {{ data().cancelText || 'Cancel' }}
+    </app-ui-button>
+
+    <app-ui-button
+      [variant]="data().variant || 'danger'"
+      (clicked)="onConfirm()">
+      {{ data().confirmText || 'Confirm' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
