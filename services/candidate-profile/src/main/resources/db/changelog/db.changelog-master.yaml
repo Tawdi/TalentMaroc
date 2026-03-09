@@ -1,0 +1,5 @@
+databaseChangeLog:
+
+  - include:
+      file: db/changelog/2026/03/05-01-create-candidate-tables.yaml
+
