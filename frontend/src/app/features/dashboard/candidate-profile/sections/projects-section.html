@@ -1,0 +1,85 @@
+<div class="section">
+  <div class="section-header">
+    <h2 class="section-title"><app-icon name="rocket" size="md" /> Projects</h2>
+    <app-ui-button variant="primary" size="sm" (clicked)="openAdd()"><app-icon name="plus" size="sm" /> Add Project</app-ui-button>
+  </div>
+
+  @if (projects().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <span class="empty-icon"><app-icon name="rocket" size="xl" /></span>
+        <p>No projects added yet. Showcase your work!</p>
+        <app-ui-button variant="outline" size="sm" (clicked)="openAdd()">Add your first project</app-ui-button>
+      </div>
+    </app-ui-card>
+  } @else {
+    <div class="projects-grid">
+      @for (p of projects(); track p.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="project-card">
+            <div class="project-header">
+              <h3 class="project-title">{{ p.title }}</h3>
+              <div class="project-actions">
+                <button class="icon-btn" (click)="openEdit(p)"><app-icon name="pencil" size="sm" /></button>
+                <button class="icon-btn danger" (click)="delete(p)"><app-icon name="trash" size="sm" /></button>
+              </div>
+            </div>
+
+            @if (p.description) {
+              <p class="project-description">{{ p.description }}</p>
+            }
+
+            @if (p.technologies) {
+              <div class="tech-badges">
+                @for (tech of getTechBadges(p.technologies); track tech) {
+                  <app-ui-badge variant="info" size="sm" [pill]="true">{{ tech }}</app-ui-badge>
+                }
+              </div>
+            }
+
+            <div class="project-footer">
+              @if (p.url) {
+                <a [href]="p.url" target="_blank" rel="noopener noreferrer" class="project-link">
+                  <app-icon name="link" size="sm" /> View Project
+                </a>
+              }
+              @if (p.startDate) {
+                <span class="project-date">{{ p.startDate }}@if (p.endDate) { — {{ p.endDate }}}</span>
+              }
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+  }
+</div>
+
+<app-ui-modal [isOpen]="isModalOpen()" [title]="editingProject() ? 'Edit Project' : 'Add Project'" size="lg" (closed)="close()">
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+  }
+  <form class="modal-form" (submit)="$event.preventDefault(); save()">
+    <app-ui-input label="Project Title" [required]="true" placeholder="e.g. E-Commerce Platform" [(value)]="title" />
+    <app-ui-textarea label="Description" [rows]="3" placeholder="Describe the project..." [(value)]="description" />
+    <app-ui-input label="URL" type="url" placeholder="https://github.com/..." [(value)]="url" />
+    <app-ui-input label="Technologies" placeholder="Java, Spring Boot, React (comma-separated)" [(value)]="technologies" />
+    <div class="form-row">
+      <app-ui-date-input label="Start Date" [(value)]="startDate" />
+      <app-ui-date-input label="End Date" [(value)]="endDate" />
+    </div>
+  </form>
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="close()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="save()">
+      {{ editingProject() ? 'Update' : 'Add' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirmation Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()" />
+
