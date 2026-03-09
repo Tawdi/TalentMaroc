@@ -1,0 +1,62 @@
+<app-ui-card>
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title"><app-icon name="wrench" size="md" /> Skills</h2>
+      <app-ui-button variant="ghost" size="sm" (clicked)="openAdd()"><app-icon name="plus" size="sm" /> Add</app-ui-button>
+    </div>
+
+    @if (skills().length === 0) {
+      <p class="empty-text">No skills added yet. Add your technical and soft skills.</p>
+    } @else {
+      <div class="skills-list">
+        @for (skill of skills(); track skill.id) {
+          <div class="skill-item">
+            <div class="skill-info">
+              <span class="skill-name">{{ skill.name }}</span>
+              <app-ui-badge [variant]="getLevelVariant(skill.level)" size="sm" [pill]="true">
+                {{ levelLabels[skill.level] }}
+              </app-ui-badge>
+            </div>
+            @if (!compact()) {
+              <div class="skill-actions">
+                <button class="icon-btn" (click)="openEdit(skill)" title="Edit"><app-icon name="pencil" size="sm" /></button>
+                <button class="icon-btn danger" (click)="delete(skill)" title="Delete"><app-icon name="trash" size="sm" /></button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</app-ui-card>
+
+<app-ui-modal [isOpen]="isModalOpen()" [title]="editingSkill() ? 'Edit Skill' : 'Add Skill'" size="sm" (closed)="close()">
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+  }
+
+  <div class="modal-form">
+    <app-ui-autocomplete
+      label="Skill Name"
+      [required]="true"
+      placeholder="Search for a skill..."
+      [options]="skillOptions"
+      [(value)]="skillName" />
+    <app-ui-select label="Level" [required]="true" [options]="levelOptions" [(value)]="skillLevel" />
+  </div>
+
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="close()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="save()">
+      {{ editingSkill() ? 'Update' : 'Add' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirmation Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()" />
+
