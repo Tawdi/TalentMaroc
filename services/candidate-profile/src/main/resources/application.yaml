@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: candidate-profile-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/job_board_candidate_db
+    username: ${DB_USERNAME:dev}
+    password: ${DB_PASSWORD:dev}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8090
+
+# File storage configuration
+file:
+  upload-dir: ./uploads/cv
