@@ -1,0 +1,192 @@
+<div class="manage-offers-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="briefcase" size="lg" /> My Job Offers</h1>
+      <p>{{ totalElements() }} offer{{ totalElements() !== 1 ? 's' : '' }} total</p>
+    </div>
+    <app-ui-button variant="primary" (clicked)="openCreate()">
+      <app-icon name="plus" size="sm" /> Create Offer
+    </app-ui-button>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="offers-grid">
+      @for (i of [1,2,3]; track i) {
+        <app-ui-card>
+          <app-skeleton type="rectangle" height="180px" />
+        </app-ui-card>
+      }
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (offers().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="briefcase" size="xl" /></div>
+        <h2>No Offers Yet</h2>
+        <p>Create your first job offer to start finding great candidates!</p>
+        <app-ui-button variant="primary" (clicked)="openCreate()">
+          <app-icon name="plus" size="sm" /> Create Offer
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+  }
+
+  <!-- Offers List -->
+  @else {
+    <div class="offers-grid">
+      @for (offer of offers(); track offer.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="offer-card">
+            <div class="offer-header">
+              <div class="offer-title-row">
+                <h3>{{ offer.title }}</h3>
+                <app-ui-badge [variant]="getStatusVariant(offer.status)" [pill]="true" size="sm">
+                  {{ statusLabels[offer.status] }}
+                </app-ui-badge>
+              </div>
+              <div class="offer-meta">
+                <app-ui-badge variant="info" size="sm">{{ contractLabels[offer.contractType] }}</app-ui-badge>
+                @if (offer.location) {
+                  <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ offer.location }}</span>
+                }
+                @if (offer.salaryRange) {
+                  <span class="meta-item">💰 {{ offer.salaryRange }}</span>
+                }
+              </div>
+            </div>
+
+            <p class="offer-description">{{ offer.description | slice:0:150 }}{{ offer.description.length > 150 ? '...' : '' }}</p>
+
+            <div class="offer-stats">
+              <span class="stat"><app-icon name="user" size="sm" /> {{ offer.applicationsCount ?? 0 }} applications</span>
+              <span class="stat"><app-icon name="clock" size="sm" /> {{ offer.createdAt | date:'mediumDate' }}</span>
+              @if (offer.expiresAt) {
+                <span class="stat"><app-icon name="calendar" size="sm" /> Expires: {{ offer.expiresAt | date:'mediumDate' }}</span>
+              }
+            </div>
+
+            <div class="offer-actions">
+              <app-ui-button variant="ghost" size="sm" (clicked)="openEdit(offer)">
+                <app-icon name="pencil" size="sm" /> Edit
+              </app-ui-button>
+
+              @if (offer.status === 'DRAFT') {
+                <app-ui-button variant="primary" size="sm" (clicked)="requestPublish(offer)">
+                  <app-icon name="check" size="sm" /> Publish
+                </app-ui-button>
+              }
+              @if (offer.status === 'ACTIVE') {
+                <app-ui-button variant="outline" size="sm" (clicked)="requestClose(offer)">
+                  <app-icon name="x-mark" size="sm" /> Close
+                </app-ui-button>
+              }
+              @if (offer.status === 'CLOSED') {
+                <app-ui-button variant="ghost" size="sm" (clicked)="requestArchive(offer)">
+                  Archive
+                </app-ui-button>
+              }
+
+              <app-ui-button variant="danger" size="sm" (clicked)="requestDelete(offer)">
+                <app-icon name="trash" size="sm" />
+              </app-ui-button>
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() === 0" (clicked)="goToPage(currentPage() - 1)">
+          Previous
+        </app-ui-button>
+        @for (p of pages; track p) {
+          <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">{{ p + 1 }}</button>
+        }
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() >= totalPages() - 1" (clicked)="goToPage(currentPage() + 1)">
+          Next
+        </app-ui-button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Create/Edit Modal -->
+<app-ui-modal [isOpen]="isModalOpen()" [title]="editingOffer() ? 'Edit Offer' : 'Create Offer'" size="lg" (closed)="closeModal()">
+  <div class="modal-form">
+    <app-ui-input
+      label="Job Title"
+      [required]="true"
+      placeholder="e.g. Senior Frontend Developer"
+      [(value)]="formTitle"
+      [errorText]="titleError()" />
+
+    <app-ui-textarea
+      label="Description"
+      [required]="true"
+      placeholder="Describe the role, responsibilities..."
+      [(value)]="formDescription"
+      [errorText]="descriptionError()"
+      [rows]="5" />
+
+    <div class="form-grid">
+      <app-ui-select
+        label="Contract Type"
+        [required]="true"
+        [options]="contractOptions"
+        [(value)]="formContractType"
+        [errorText]="contractTypeError()" />
+
+      <app-ui-input
+        label="Location"
+        placeholder="e.g. Casablanca, Remote"
+        [(value)]="formLocation" />
+    </div>
+
+    <div class="form-grid">
+      <app-ui-input
+        label="Salary Range"
+        placeholder="e.g. 8000-12000 MAD"
+        [(value)]="formSalaryRange" />
+
+      <app-ui-date-input
+        label="Expiration Date"
+        [(value)]="formExpiresAt" />
+    </div>
+
+    <app-ui-textarea
+      label="Requirements"
+      placeholder="List the required skills and qualifications..."
+      [(value)]="formRequirements"
+      [rows]="3" />
+
+    <app-ui-textarea
+      label="Benefits"
+      placeholder="List the benefits and perks..."
+      [(value)]="formBenefits"
+      [rows]="3" />
+  </div>
+
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="closeModal()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="saveOffer()">
+      {{ editingOffer() ? 'Update Offer' : 'Create Offer' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirm Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDialogAction()"
+  (cancelled)="cancelConfirm()" />
+
