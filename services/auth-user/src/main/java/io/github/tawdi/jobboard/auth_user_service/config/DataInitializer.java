@@ -2,13 +2,16 @@ package io.github.tawdi.jobboard.auth_user_service.config;
 
 import io.github.tawdi.jobboard.auth_user_service.entity.Permission;
 import io.github.tawdi.jobboard.auth_user_service.entity.Role;
+import io.github.tawdi.jobboard.auth_user_service.entity.User;
 import io.github.tawdi.jobboard.auth_user_service.repository.PermissionRepository;
 import io.github.tawdi.jobboard.auth_user_service.repository.RoleRepository;
+import io.github.tawdi.jobboard.auth_user_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,6 +25,8 @@ public class DataInitializer {
 
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public CommandLineRunner initData() {
@@ -31,6 +36,9 @@ public class DataInitializer {
             }
             if (roleRepository.count() == 0) {
                 initializeRoles();
+            }
+            if (!userRepository.existsByEmail("admin@jobboard.com")) {
+                initializeAdminUser();
             }
         };
     }
@@ -128,5 +136,25 @@ public class DataInitializer {
 
         roleRepository.saveAll(Arrays.asList(adminRole, companyRole, studentRole, userRole));
         log.info("Initialized 4 roles: ADMIN, COMPANY, CANDIDATE, USER");
+    }
+
+    private void initializeAdminUser() {
+        log.info("Creating default admin user...");
+
+        Role adminRole = roleRepository.findByName("ADMIN")
+            .orElseThrow(() -> new RuntimeException("ADMIN role not found"));
+
+        User adminUser = User.builder()
+            .email("admin@jobboard.com")
+            .username("admin")
+            .password(passwordEncoder.encode("admin123"))
+            .name("System Administrator")
+            .role(adminRole)
+            .enabled(true)
+            .provider("LOCAL")
+            .build();
+
+        userRepository.save(adminUser);
+        log.info("Created admin user: admin@jobboard.com / admin123");
     }
 }
