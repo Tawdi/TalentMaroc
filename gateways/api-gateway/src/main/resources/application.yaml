@@ -41,6 +41,18 @@ spring:
                 - Path=/candidate-profile/**
               filters:
                 - StripPrefix=1
+            - id: company-offers-service
+              uri: lb://COMPANY-OFFERS-SERVICE
+              predicates:
+                - Path=/company-offers/**
+              filters:
+                - StripPrefix=1
+            - id: applications-service
+              uri: lb://APPLICATIONS-SERVICE
+              predicates:
+                - Path=/applications/**
+              filters:
+                - StripPrefix=1
 
 eureka:
   client:
