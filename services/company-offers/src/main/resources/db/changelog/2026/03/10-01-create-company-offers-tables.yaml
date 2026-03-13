@@ -1,0 +1,191 @@
+databaseChangeLog:
+
+  # ─── 1. companies ──────────────────────────────────────────────────
+  - changeSet:
+      id: 20260310-001
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: companies
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: company_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sector
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: website
+                  type: VARCHAR(500)
+              - column:
+                  name: phone
+                  type: VARCHAR(30)
+              - column:
+                  name: logo_url
+                  type: VARCHAR(500)
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: validated_at
+                  type: TIMESTAMP
+              # embedded Address
+              - column:
+                  name: address_street
+                  type: VARCHAR(255)
+              - column:
+                  name: address_city
+                  type: VARCHAR(100)
+              - column:
+                  name: address_state
+                  type: VARCHAR(100)
+              - column:
+                  name: address_zip_code
+                  type: VARCHAR(20)
+              - column:
+                  name: address_country
+                  type: VARCHAR(100)
+              # auditing
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 2. offers ─────────────────────────────────────────────────────
+  - changeSet:
+      id: 20260310-002
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: offers
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: contract_type
+                  type: VARCHAR(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+              - column:
+                  name: salary_range
+                  type: VARCHAR(100)
+              - column:
+                  name: requirements
+                  type: TEXT
+              - column:
+                  name: benefits
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: DRAFT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: DATE
+              - column:
+                  name: views_count
+                  type: BIGINT
+                  defaultValueNumeric: 0
+              - column:
+                  name: applications_count
+                  type: BIGINT
+                  defaultValueNumeric: 0
+              - column:
+                  name: company_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_offer_company
+                    references: companies(id)
+                    deleteCascade: true
+              # auditing
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 3. Index on offers for common queries ─────────────────────────
+  - changeSet:
+      id: 20260310-003
+      author: tawdi
+      changes:
+        - createIndex:
+            indexName: idx_offer_company_id
+            tableName: offers
+            columns:
+              - column:
+                  name: company_id
+        - createIndex:
+            indexName: idx_offer_status
+            tableName: offers
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_offer_contract_type
+            tableName: offers
+            columns:
+              - column:
+                  name: contract_type
+        - createIndex:
+            indexName: idx_company_status
+            tableName: companies
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_company_user_id
+            tableName: companies
+            columns:
+              - column:
+                  name: user_id
+
