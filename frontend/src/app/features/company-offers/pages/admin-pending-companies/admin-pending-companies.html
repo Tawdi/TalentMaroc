@@ -1,0 +1,120 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="building" size="lg" /> Pending Companies</h1>
+      <p>Review and approve company registrations</p>
+    </div>
+    <app-ui-button variant="outline" size="sm" (clicked)="refresh()">
+      Refresh
+    </app-ui-button>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error">{{ error() }}</app-ui-alert>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="companies-list">
+      @for (i of [1,2,3]; track i) {
+        <app-ui-card>
+          <app-skeleton type="rectangle" height="120px" />
+        </app-ui-card>
+      }
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (companies().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="check" size="xl" /></div>
+        <h2>All Caught Up!</h2>
+        <p>No pending company registrations to review.</p>
+      </div>
+    </app-ui-card>
+  }
+
+  <!-- Companies List -->
+  @else {
+    <div class="companies-list">
+      @for (company of companies(); track company.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="company-item">
+            <div class="company-avatar">
+              @if (company.logoUrl) {
+                <img [src]="company.logoUrl" [alt]="company.companyName" class="logo" />
+              } @else {
+                <div class="logo-fallback">
+                  <app-icon name="building" size="lg" />
+                </div>
+              }
+            </div>
+
+            <div class="company-info">
+              <div class="company-name-row">
+                <h3>{{ company.companyName }}</h3>
+                <app-ui-badge variant="warning" [pill]="true" size="sm">Pending</app-ui-badge>
+              </div>
+              <p class="company-sector">{{ company.sector }}</p>
+              <div class="company-meta">
+                @if (company.address?.city) {
+                  <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ company.address!.city }}@if (company.address!.country) {, {{ company.address!.country }}}</span>
+                }
+                @if (company.createdAt) {
+                  <span class="meta-item"><app-icon name="calendar" size="sm" /> {{ company.createdAt | date:'mediumDate' }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="company-actions">
+              <app-ui-button variant="primary" size="sm" (clicked)="openValidate(company)">
+                Review
+              </app-ui-button>
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+  }
+</div>
+
+<!-- Validate Modal -->
+<app-ui-modal [isOpen]="isValidateModalOpen()" title="Review Company" size="md" (closed)="closeValidate()">
+  @if (selectedCompany(); as c) {
+    <div class="validate-form">
+      <div class="company-summary">
+        <h3>{{ c.companyName }}</h3>
+        <p>{{ c.sector }}</p>
+        @if (c.address?.city) {
+          <p class="text-muted"><app-icon name="map-pin" size="sm" /> {{ c.address!.city }}@if (c.address!.country) {, {{ c.address!.country }}}</p>
+        }
+      </div>
+
+      <app-ui-select
+        label="Decision"
+        [required]="true"
+        placeholder="Select decision..."
+        [options]="decisionOptions"
+        [(value)]="validateDecision" />
+
+      <app-ui-textarea
+        label="Reason (optional)"
+        placeholder="Provide a reason for your decision..."
+        [(value)]="validateReason"
+        [rows]="3" />
+    </div>
+  }
+
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="closeValidate()">Cancel</app-ui-button>
+    <app-ui-button
+      [variant]="validateDecision() === 'APPROVED' ? 'primary' : 'danger'"
+      [loading]="saving()"
+      [disabled]="!validateDecision()"
+      (clicked)="submitValidation()">
+      {{ validateDecision() === 'APPROVED' ? 'Approve' : validateDecision() === 'REJECTED' ? 'Reject' : 'Submit' }}
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+

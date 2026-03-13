@@ -1,0 +1,154 @@
+<!-- Loading -->
+@if (loading()) {
+  <div class="job-detail-page">
+    <app-ui-card>
+      <div class="skeleton-detail">
+        <app-skeleton width="60%" height="1.75rem" />
+        <app-skeleton width="40%" height="1rem" />
+        <app-skeleton width="100%" height="8rem" />
+        <app-skeleton width="50%" height="1rem" />
+      </div>
+    </app-ui-card>
+  </div>
+}
+
+<!-- Error -->
+@else if (error()) {
+  <div class="job-detail-page">
+    <app-ui-alert type="error">{{ error() }}</app-ui-alert>
+    <app-ui-button variant="outline" (clicked)="goBack()">← Back to Jobs</app-ui-button>
+  </div>
+}
+
+<!-- Offer loaded -->
+@else if (offer(); as o) {
+  <div class="job-detail-page">
+
+    <button class="back-link" (click)="goBack()">
+      <app-icon name="chevron-right" size="sm" /> Back to Jobs
+    </button>
+
+    <div class="detail-layout">
+      <!-- Main content -->
+      <div class="detail-main">
+        <app-ui-card>
+          <div class="job-header">
+            <div class="company-row">
+              @if (o.company?.logoUrl) {
+                <img [src]="o.company!.logoUrl" [alt]="o.company!.companyName" class="company-logo" />
+              } @else {
+                <div class="company-logo-fallback">
+                  <app-icon name="building" size="lg" />
+                </div>
+              }
+              <div>
+                <h1>{{ o.title }}</h1>
+                <p class="company-name">{{ o.company?.companyName }}</p>
+              </div>
+            </div>
+
+            <div class="job-badges">
+              <app-ui-badge variant="info" [pill]="true">{{ contractLabels[o.contractType] }}</app-ui-badge>
+              <app-ui-badge [variant]="getStatusVariant(o.status)" [pill]="true" size="sm">{{ statusLabels[o.status] }}</app-ui-badge>
+            </div>
+
+            <div class="job-meta">
+              @if (o.location) {
+                <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ o.location }}</span>
+              }
+              @if (o.salaryRange) {
+                <span class="meta-item">💰 {{ o.salaryRange }}</span>
+              }
+              @if (o.createdAt) {
+                <span class="meta-item"><app-icon name="calendar" size="sm" /> Posted {{ o.createdAt | date:'mediumDate' }}</span>
+              }
+              @if (o.expiresAt) {
+                <span class="meta-item"><app-icon name="clock" size="sm" /> Expires {{ o.expiresAt | date:'mediumDate' }}</span>
+              }
+            </div>
+          </div>
+        </app-ui-card>
+
+        <!-- Description -->
+        <app-ui-card>
+          <div class="content-section">
+            <h2><app-icon name="document" size="md" /> Job Description</h2>
+            <div class="content-text">{{ o.description }}</div>
+          </div>
+        </app-ui-card>
+
+        <!-- Requirements -->
+        @if (o.requirements) {
+          <app-ui-card>
+            <div class="content-section">
+              <h2><app-icon name="check" size="md" /> Requirements</h2>
+              <div class="content-text">{{ o.requirements }}</div>
+            </div>
+          </app-ui-card>
+        }
+
+        <!-- Benefits -->
+        @if (o.benefits) {
+          <app-ui-card>
+            <div class="content-section">
+              <h2><app-icon name="sparkles" size="md" /> Benefits</h2>
+              <div class="content-text">{{ o.benefits }}</div>
+            </div>
+          </app-ui-card>
+        }
+      </div>
+
+      <!-- Sidebar -->
+      <div class="detail-sidebar">
+        <!-- Apply CTA -->
+        <app-ui-card>
+          <div class="apply-card">
+            <h3>Interested in this position?</h3>
+            <p>Apply now and take the next step in your career.</p>
+            <app-ui-button variant="primary" size="lg" [fullWidth]="true">
+              Apply Now
+            </app-ui-button>
+          </div>
+        </app-ui-card>
+
+        <!-- Company Info -->
+        <app-ui-card>
+          <div class="sidebar-section">
+            <h3><app-icon name="building" size="md" /> About the Company</h3>
+            <div class="company-detail">
+              @if (o.company?.logoUrl) {
+                <img [src]="o.company!.logoUrl" [alt]="o.company!.companyName" class="sidebar-logo" />
+              }
+              <p class="sidebar-company-name">{{ o.company?.companyName }}</p>
+              <p class="sidebar-sector">{{ o.company?.sector }}</p>
+              @if (o.company?.address?.city) {
+                <p class="sidebar-location">
+                  <app-icon name="map-pin" size="sm" />
+                  {{ o.company!.address!.city }}@if (o.company!.address!.country) {, {{ o.company!.address!.country }}}
+                </p>
+              }
+            </div>
+          </div>
+        </app-ui-card>
+
+        <!-- Stats -->
+        <app-ui-card>
+          <div class="sidebar-section">
+            <h3>Job Stats</h3>
+            <div class="stats-list">
+              <div class="stat-row">
+                <span class="stat-label"><app-icon name="user" size="sm" /> Applications</span>
+                <span class="stat-value">{{ o.applicationsCount ?? 0 }}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label"><app-icon name="clock" size="sm" /> Views</span>
+                <span class="stat-value">{{ o.viewsCount ?? 0 }}</span>
+              </div>
+            </div>
+          </div>
+        </app-ui-card>
+      </div>
+    </div>
+  </div>
+}
+

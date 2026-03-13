@@ -1,11 +1,25 @@
 import {Routes} from '@angular/router';
-import {adminGuard, authGuard, guestGuard} from './core/guards/auth.guard';
+import {provideState} from '@ngrx/store';
+import {provideEffects} from '@ngrx/effects';
+import {adminGuard, authGuard, companyGuard, guestGuard} from './core/guards/auth.guard';
+import {
+  COMPANY_OFFERS_FEATURE_KEY,
+  companyOffersReducers,
+  CompanyEffects,
+  OfferEffects,
+} from './features/company-offers/store';
+
+const companyOffersProviders = [
+  provideState(COMPANY_OFFERS_FEATURE_KEY, companyOffersReducers),
+  provideEffects(CompanyEffects, OfferEffects),
+];
 
 export const routes: Routes = [
   // Public routes with Public Layout
   {
     path: '',
     loadComponent: () => import('./layouts/public-layout/public-layout').then(m => m.PublicLayoutComponent),
+    providers: [...companyOffersProviders],
     children: [
       {
         path: '',
@@ -13,7 +27,16 @@ export const routes: Routes = [
       },
       {
         path: 'jobs',
-        loadComponent: () => import('./features/home/home').then(m => m.HomeComponent), // Placeholder
+        loadComponent: () => import('./features/company-offers/pages/job-listings/job-listings').then(m => m.JobListingsComponent),
+      },
+      {
+        path: 'jobs/:offerId',
+        loadComponent: () => import('./features/company-offers/pages/job-detail/job-detail').then(m => m.JobDetailComponent),
+      },
+      {
+        path: 'register/company',
+        canActivate: [guestGuard],
+        loadComponent: () => import('./features/company-offers/pages/company-register/public-company-register').then(m => m.PublicCompanyRegisterComponent),
       },
       {
         path: 'companies',
@@ -64,6 +87,7 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./layouts/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent),
     canActivate: [authGuard],
+    providers: [...companyOffersProviders],
     children: [
       {
         path: '',
@@ -81,6 +105,22 @@ export const routes: Routes = [
         path: 'profile',
         loadComponent: () => import('./features/dashboard/candidate-profile/candidate-profile').then(m => m.CandidateProfileComponent),
       },
+      // Company routes
+      {
+        path: 'company-profile',
+        canActivate: [companyGuard],
+        loadComponent: () => import('./features/company-offers/pages/company-profile/company-profile').then(m => m.CompanyProfileComponent),
+      },
+      {
+        path: 'company-register',
+        canActivate: [companyGuard],
+        loadComponent: () => import('./features/company-offers/pages/company-register/company-register').then(m => m.CompanyRegisterComponent),
+      },
+      {
+        path: 'offers',
+        canActivate: [companyGuard],
+        loadComponent: () => import('./features/company-offers/pages/manage-offers/manage-offers').then(m => m.ManageOffersComponent),
+      },
       {
         path: 'settings',
         loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
@@ -97,10 +137,15 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./layouts/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent),
     canActivate: [authGuard, adminGuard],
+    providers: [...companyOffersProviders],
     children: [
       {
         path: '',
         loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
+      },
+      {
+        path: 'companies',
+        loadComponent: () => import('./features/company-offers/pages/admin-pending-companies/admin-pending-companies').then(m => m.AdminPendingCompaniesComponent),
       },
     ],
   },

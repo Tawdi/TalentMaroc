@@ -63,13 +63,9 @@ export class DashboardLayoutComponent {
       case 'COMPANY':
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-          { label: 'Post a Job', icon: 'plus', route: '/dashboard/post-job' },
-          { label: 'My Job Listings', icon: 'briefcase', route: '/dashboard/jobs' },
-          { label: 'Applications', icon: 'applications', route: '/dashboard/applications', badge: 24 },
-          { label: 'Candidates', icon: 'users', route: '/dashboard/candidates' },
           { label: 'Company Profile', icon: 'building', route: '/dashboard/company-profile' },
-          { label: 'Messages', icon: 'message', route: '/dashboard/messages', badge: 8 },
-          { label: 'Analytics', icon: 'chart', route: '/dashboard/analytics' },
+          { label: 'My Offers', icon: 'briefcase', route: '/dashboard/offers' },
+          { label: 'Messages', icon: 'message', route: '/dashboard/messages' },
           { label: 'Settings', icon: 'settings', route: '/dashboard/settings' },
         ];
 

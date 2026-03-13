@@ -1,0 +1,192 @@
+<!-- Loading -->
+@if (loading()) {
+  <div class="company-profile-page">
+    <app-ui-card>
+      <div class="skeleton-header">
+        <app-skeleton type="circle" width="5rem" height="5rem" />
+        <div class="skeleton-text-group">
+          <app-skeleton width="250px" height="1.5rem" />
+          <app-skeleton width="180px" height="1rem" />
+          <app-skeleton width="120px" height="1rem" />
+        </div>
+      </div>
+    </app-ui-card>
+    <div class="skeleton-grid">
+      <app-skeleton type="rectangle" height="200px" />
+      <app-skeleton type="rectangle" height="200px" />
+    </div>
+  </div>
+}
+
+<!-- Error -->
+@else if (error()) {
+  <div class="company-profile-page">
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  </div>
+}
+
+<!-- Not Found → Redirect to register -->
+@else if (notFound()) {
+  <div class="company-profile-page">
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <app-icon name="building" size="xl" />
+        </div>
+        <h2>No Company Profile Yet</h2>
+        <p>You haven't registered your company yet. Register now to start posting job offers!</p>
+        <app-ui-button variant="primary" size="lg" (clicked)="goToRegister()">
+          <app-icon name="plus" size="sm" /> Register Company
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+  </div>
+}
+
+<!-- Company Loaded -->
+@else if (company(); as c) {
+  <div class="company-profile-page">
+
+    <!-- Header Card -->
+    <app-ui-card>
+      <div class="profile-header">
+        <div class="company-avatar">
+          @if (c.logoUrl) {
+            <img [src]="c.logoUrl" [alt]="c.companyName" class="avatar-img" />
+          } @else {
+            <div class="avatar-fallback">
+              <app-icon name="building" size="xl" />
+            </div>
+          }
+        </div>
+
+        <div class="header-info">
+          <div class="name-row">
+            <h1>{{ c.companyName }}</h1>
+            <app-ui-badge [variant]="getStatusVariant(c.status)" [pill]="true">
+              {{ statusLabels[c.status] }}
+            </app-ui-badge>
+          </div>
+          <p class="sector">{{ c.sector }}</p>
+          <div class="meta-row">
+            @if (c.address?.city) {
+              <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ c.address!.city }}@if (c.address!.country) {, {{ c.address!.country }}}</span>
+            }
+            @if (c.phone) {
+              <span class="meta-item"><app-icon name="phone" size="sm" /> {{ c.phone }}</span>
+            }
+            @if (c.website) {
+              <span class="meta-item"><app-icon name="link" size="sm" /> <a [href]="c.website" target="_blank" rel="noopener">{{ c.website }}</a></span>
+            }
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <app-ui-button variant="outline" size="sm" (clicked)="openEdit()">
+            <app-icon name="pencil" size="sm" /> Edit
+          </app-ui-button>
+          <app-ui-button variant="danger" size="sm" (clicked)="confirmDeleteCompany()">
+            <app-icon name="trash" size="sm" /> Delete
+          </app-ui-button>
+        </div>
+      </div>
+    </app-ui-card>
+
+    <!-- Status Warning -->
+    @if (c.status === 'PENDING') {
+      <app-ui-alert type="warning" title="Pending Approval">
+        Your company is currently under review. You will be able to post offers once approved.
+      </app-ui-alert>
+    }
+    @if (c.status === 'REJECTED') {
+      <app-ui-alert type="error" title="Registration Rejected">
+        Your company registration has been rejected. Please contact support or update your information and try again.
+      </app-ui-alert>
+    }
+
+    <!-- Info Cards -->
+    <div class="info-grid">
+      <!-- About -->
+      <app-ui-card>
+        <div class="info-section">
+          <h2 class="section-title"><app-icon name="information-circle" size="md" /> About</h2>
+          @if (c.description) {
+            <p class="description">{{ c.description }}</p>
+          } @else {
+            <p class="empty-text">No description provided.</p>
+          }
+        </div>
+      </app-ui-card>
+
+      <!-- Address -->
+      <app-ui-card>
+        <div class="info-section">
+          <h2 class="section-title"><app-icon name="map-pin" size="md" /> Address</h2>
+          @if (c.address?.street || c.address?.city) {
+            <div class="address-detail">
+              @if (c.address?.street) { <p>{{ c.address!.street }}</p> }
+              <p>
+                @if (c.address?.city) { {{ c.address!.city }} }
+                @if (c.address?.state) { , {{ c.address!.state }} }
+                @if (c.address?.zipCode) { {{ c.address!.zipCode }} }
+              </p>
+              @if (c.address?.country) { <p>{{ c.address!.country }}</p> }
+            </div>
+          } @else {
+            <p class="empty-text">No address provided.</p>
+          }
+        </div>
+      </app-ui-card>
+
+      <!-- Quick Actions -->
+      @if (c.status === 'APPROVED') {
+        <app-ui-card>
+          <div class="info-section">
+            <h2 class="section-title"><app-icon name="briefcase" size="md" /> Offers</h2>
+            <p class="empty-text">Manage your job offers and find the best candidates.</p>
+            <app-ui-button variant="primary" (clicked)="goToOffers()">
+              <app-icon name="briefcase" size="sm" /> Manage Offers
+            </app-ui-button>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+  </div>
+}
+
+<!-- Edit Modal -->
+<app-ui-modal [isOpen]="isEditOpen()" title="Edit Company" size="lg" (closed)="closeEdit()">
+  <div class="modal-form">
+    <div class="form-grid">
+      <app-ui-input label="Company Name" [(value)]="editName" />
+      <app-ui-input label="Sector" [(value)]="editSector" />
+    </div>
+    <app-ui-textarea label="Description" [(value)]="editDescription" [rows]="4" />
+    <div class="form-grid">
+      <app-ui-input label="Website" type="url" [(value)]="editWebsite" />
+      <app-ui-input label="Phone" type="tel" [(value)]="editPhone" />
+    </div>
+    <h3 class="form-section-sub">Address</h3>
+    <app-ui-input label="Street" [(value)]="editStreet" />
+    <div class="form-grid">
+      <app-ui-input label="City" [(value)]="editCity" />
+      <app-ui-input label="State" [(value)]="editState" />
+    </div>
+    <div class="form-grid">
+      <app-ui-input label="ZIP Code" [(value)]="editZipCode" />
+      <app-ui-input label="Country" [(value)]="editCountry" />
+    </div>
+  </div>
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="closeEdit()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="saving()" (clicked)="saveEdit()">Save Changes</app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Delete Confirmation -->
+<app-ui-confirm-dialog
+  [isOpen]="showDeleteConfirm()"
+  [data]="deleteConfirmData"
+  (confirmed)="deleteCompany()"
+  (cancelled)="cancelDelete()" />
+

@@ -1,0 +1,141 @@
+<div class="job-listings-page">
+  <!-- Hero / Search -->
+  <div class="search-section">
+    <h1>Find Your Dream Job</h1>
+    <p>Discover opportunities from top companies across Morocco</p>
+
+    <div class="search-bar">
+      <div class="search-inputs">
+        <app-ui-input
+          type="search"
+          placeholder="Job title, keywords..."
+          [(value)]="keyword" />
+        <app-ui-input
+          type="search"
+          placeholder="Location..."
+          [(value)]="location" />
+        <app-ui-select
+          [options]="contractOptions"
+          [(value)]="contractType"
+          placeholder="Contract type" />
+      </div>
+      <div class="search-actions">
+        <app-ui-button variant="primary" (clicked)="search()">
+          <app-icon name="briefcase" size="sm" /> Search
+        </app-ui-button>
+        <app-ui-button variant="ghost" size="sm" (clicked)="clearFilters()">Clear</app-ui-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employer CTA -->
+  <div class="employer-cta">
+    <div class="cta-content">
+      <h3>Looking to hire top talent?</h3>
+      <p>Post your job openings and connect with qualified candidates</p>
+    </div>
+    <div class="cta-actions">
+      <a routerLink="/register/company" class="cta-button">
+        <app-icon name="building" size="sm" />
+        Post Jobs - Register Company
+      </a>
+    </div>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error">{{ error() }}</app-ui-alert>
+  }
+
+  <!-- Results count -->
+  <div class="results-info">
+    <span>{{ totalElements() }} job{{ totalElements() !== 1 ? 's' : '' }} found</span>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="jobs-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <app-ui-card>
+          <div class="skeleton-job">
+            <app-skeleton width="60%" height="1.25rem" />
+            <app-skeleton width="40%" height="0.875rem" />
+            <app-skeleton width="100%" height="3rem" />
+            <app-skeleton width="30%" height="0.75rem" />
+          </div>
+        </app-ui-card>
+      }
+    </div>
+  }
+
+  <!-- No results -->
+  @else if (offers().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="briefcase" size="xl" /></div>
+        <h2>No Jobs Found</h2>
+        <p>Try adjusting your search filters or check back later.</p>
+        <app-ui-button variant="outline" (clicked)="clearFilters()">Clear Filters</app-ui-button>
+      </div>
+    </app-ui-card>
+  }
+
+  <!-- Job Cards -->
+  @else {
+    <div class="jobs-grid">
+      @for (offer of offers(); track offer.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="job-card" (click)="viewOffer(offer)">
+            <div class="job-card-header">
+              <div class="company-info">
+                @if (offer.company?.logoUrl) {
+                  <img [src]="offer.company!.logoUrl" [alt]="offer.company!.companyName" class="company-logo" />
+                } @else {
+                  <div class="company-logo-fallback">
+                    <app-icon name="building" size="md" />
+                  </div>
+                }
+                <div>
+                  <h3 class="job-title">{{ offer.title }}</h3>
+                  <p class="company-name">{{ offer.company?.companyName }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="job-tags">
+              <app-ui-badge variant="info" size="sm" [pill]="true">{{ contractLabels[offer.contractType] }}</app-ui-badge>
+              @if (offer.location) {
+                <span class="tag"><app-icon name="map-pin" size="sm" /> {{ offer.location }}</span>
+              }
+              @if (offer.salaryRange) {
+                <span class="tag">💰 {{ offer.salaryRange }}</span>
+              }
+            </div>
+
+            <p class="job-description">{{ offer.description | slice:0:180 }}{{ offer.description.length > 180 ? '...' : '' }}</p>
+
+            <div class="job-footer">
+              <span class="time-ago"><app-icon name="clock" size="sm" /> {{ getTimeAgo(offer.createdAt) }}</span>
+              <app-ui-button variant="outline" size="sm">View Details</app-ui-button>
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() === 0" (clicked)="goToPage(currentPage() - 1)">
+          Previous
+        </app-ui-button>
+        @for (p of pages; track p) {
+          <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">{{ p + 1 }}</button>
+        }
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() >= totalPages() - 1" (clicked)="goToPage(currentPage() + 1)">
+          Next
+        </app-ui-button>
+      </div>
+    }
+  }
+</div>
+
