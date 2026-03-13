@@ -1,0 +1,149 @@
+@if (success()) {
+  <div class="register-page">
+    <app-ui-card>
+      <div class="success-state">
+        <div class="success-icon">
+          <app-icon name="check" size="xl" />
+        </div>
+        <h2>Registration Submitted!</h2>
+        <p>Thank you for registering your company with us.</p>
+        <div class="success-details">
+          <p><strong>{{ companyName() }}</strong> has been submitted for review.</p>
+          <p class="text-muted">Our team will review your application and notify you via email once approved. You'll then be able to log in and start posting job offers.</p>
+        </div>
+        <div class="success-actions">
+          <app-ui-button variant="primary" (clicked)="goToLogin()">
+            Go to Login
+          </app-ui-button>
+        </div>
+      </div>
+    </app-ui-card>
+  </div>
+} @else {
+  <div class="register-page">
+    <div class="register-header">
+      <h1><app-icon name="building" size="lg" /> Register Your Company</h1>
+      <p>Join our job board to connect with top talent. Your registration will be reviewed by our team.</p>
+    </div>
+
+    @if (error()) {
+      <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+    }
+
+    <app-ui-card>
+      <form (ngSubmit)="submit()" class="register-form">
+
+        <h2 class="form-section-title">Account Information</h2>
+        <div class="form-grid">
+          <app-ui-input
+            label="Business Email"
+            type="email"
+            [required]="true"
+            placeholder="your-company@example.com"
+            [(value)]="email"
+            [errorText]="emailError()" />
+
+          <app-ui-input
+            label="Password"
+            type="password"
+            [required]="true"
+            placeholder="Create a secure password"
+            [(value)]="password"
+            [errorText]="passwordError()" />
+        </div>
+
+        <app-ui-input
+          label="Confirm Password"
+          type="password"
+          [required]="true"
+          placeholder="Confirm your password"
+          [(value)]="confirmPassword"
+          [errorText]="confirmPasswordError()" />
+
+        <h2 class="form-section-title">Company Details</h2>
+        <div class="form-grid">
+          <app-ui-input
+            label="Company Name"
+            [required]="true"
+            placeholder="Your company name"
+            [(value)]="companyName"
+            [errorText]="companyNameError()" />
+
+          <app-ui-input
+            label="Business Sector"
+            [required]="true"
+            placeholder="e.g. Technology, Finance, Healthcare"
+            [(value)]="sector"
+            [errorText]="sectorError()" />
+        </div>
+
+        <app-ui-textarea
+          label="Company Description"
+          placeholder="Tell us about your company, what you do, company culture..."
+          [(value)]="description"
+          [rows]="4" />
+
+        <div class="form-grid">
+          <app-ui-input
+            label="Website"
+            type="url"
+            placeholder="https://yourcompany.com"
+            [(value)]="website" />
+
+          <app-ui-input
+            label="Phone Number"
+            type="tel"
+            placeholder="+212 6XX XXX XXX"
+            [(value)]="phone" />
+        </div>
+
+        <h2 class="form-section-title">Company Address</h2>
+        <app-ui-input
+          label="Street Address"
+          placeholder="Street address"
+          [(value)]="street" />
+
+        <div class="form-grid">
+          <app-ui-input
+            label="City"
+            placeholder="City"
+            [(value)]="city" />
+
+          <app-ui-input
+            label="State / Region"
+            placeholder="State or region"
+            [(value)]="state" />
+        </div>
+
+        <div class="form-grid">
+          <app-ui-input
+            label="ZIP / Postal Code"
+            placeholder="ZIP code"
+            [(value)]="zipCode" />
+
+          <app-ui-input
+            label="Country"
+            placeholder="Country"
+            [(value)]="country" />
+        </div>
+
+        <div class="form-notice">
+          <app-ui-alert type="info">
+            <strong>Review Process:</strong> All company registrations are reviewed by our team to ensure quality.
+            You'll receive an email notification once your account is approved and you can start posting jobs.
+          </app-ui-alert>
+        </div>
+
+        <div class="form-actions">
+          <app-ui-button type="submit" variant="primary" size="lg" [loading]="saving()" [fullWidth]="true">
+            <app-icon name="building" size="sm" /> Register Company
+          </app-ui-button>
+
+          <p class="login-link">
+            Already have an account? <a routerLink="/auth/login">Sign in here</a>
+          </p>
+        </div>
+      </form>
+    </app-ui-card>
+  </div>
+}

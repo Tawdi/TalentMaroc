@@ -1,0 +1,105 @@
+@if (success()) {
+  <div class="register-page">
+    <app-ui-card>
+      <div class="success-state">
+        <div class="success-icon">
+          <app-icon name="check" size="xl" />
+        </div>
+        <h2>Company Registration Submitted!</h2>
+        <p>Your company <strong>{{ company()!.companyName }}</strong> has been submitted for review.</p>
+        <p class="text-muted">An administrator will review and approve your company. You'll be notified once approved.</p>
+      </div>
+    </app-ui-card>
+  </div>
+} @else {
+  <div class="register-page">
+    <div class="register-header">
+      <h1><app-icon name="building" size="lg" /> Register Your Company</h1>
+      <p>Fill in your company details to get started. Your registration will be reviewed by an administrator.</p>
+    </div>
+
+    @if (error()) {
+      <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+    }
+
+    <app-ui-card>
+      <form (ngSubmit)="submit()" class="register-form">
+        <h2 class="form-section-title">Company Information</h2>
+
+        <div class="form-grid">
+          <app-ui-input
+            label="Company Name"
+            [required]="true"
+            placeholder="Your company name"
+            [(value)]="companyName"
+            [errorText]="companyNameError()" />
+
+          <app-ui-input
+            label="Sector / Industry"
+            [required]="true"
+            placeholder="e.g. Technology, Finance, Healthcare"
+            [(value)]="sector"
+            [errorText]="sectorError()" />
+        </div>
+
+        <app-ui-textarea
+          label="Description"
+          placeholder="Tell us about your company..."
+          [(value)]="description"
+          [rows]="4" />
+
+        <div class="form-grid">
+          <app-ui-input
+            label="Website"
+            type="url"
+            placeholder="https://yourcompany.com"
+            [(value)]="website" />
+
+          <app-ui-input
+            label="Phone"
+            type="tel"
+            placeholder="+212 6XX XXX XXX"
+            [(value)]="phone" />
+        </div>
+
+        <h2 class="form-section-title">Address</h2>
+
+        <app-ui-input
+          label="Street"
+          placeholder="Street address"
+          [(value)]="street" />
+
+        <div class="form-grid">
+          <app-ui-input
+            label="City"
+            placeholder="City"
+            [(value)]="city" />
+
+          <app-ui-input
+            label="State / Region"
+            placeholder="State or region"
+            [(value)]="state" />
+        </div>
+
+        <div class="form-grid">
+          <app-ui-input
+            label="ZIP / Postal Code"
+            placeholder="ZIP code"
+            [(value)]="zipCode" />
+
+          <app-ui-input
+            label="Country"
+            placeholder="Country"
+            [(value)]="country" />
+        </div>
+
+        <div class="form-actions">
+          <app-ui-button type="submit" variant="primary" size="lg" [loading]="saving()" [fullWidth]="true">
+            <app-icon name="building" size="sm" /> Submit Registration
+          </app-ui-button>
+        </div>
+      </form>
+    </app-ui-card>
+  </div>
+}
+
