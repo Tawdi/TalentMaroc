@@ -241,3 +241,247 @@
   gap: 1rem;
 }
 
+/* Apply success */
+.apply-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-success, #16a34a);
+}
+
+.apply-success h3 {
+  color: var(--text-primary);
+}
+
+/* ======================== CV Apply Section ======================== */
+.cv-apply-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cv-section-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* CV Attached (existing CV) */
+.cv-attached {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(16, 185, 129, 0.06);
+  border: 1.5px solid rgba(16, 185, 129, 0.25);
+}
+
+.cv-attached-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background-color: rgba(16, 185, 129, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cv-attached-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #10b981;
+}
+
+.cv-attached-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cv-attached-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cv-attached-hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.cv-attached-check {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cv-attached-check svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: white;
+}
+
+/* CV Replace Row */
+.cv-replace-row {
+  text-align: right;
+}
+
+.cv-replace-link {
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--primary);
+  transition: color 0.15s;
+}
+
+.cv-replace-link:hover {
+  text-decoration: underline;
+}
+
+/* CV Missing */
+.cv-missing {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(245, 158, 11, 0.06);
+  border: 1.5px solid rgba(245, 158, 11, 0.25);
+}
+
+.cv-missing-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background-color: rgba(245, 158, 11, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cv-missing-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f59e0b;
+}
+
+.cv-missing-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cv-missing-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cv-missing-hint {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* CV Upload Zone */
+.cv-upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1rem;
+  border: 2px dashed var(--border-color, #e5e7eb);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.cv-upload-zone:hover {
+  border-color: var(--primary);
+  background-color: rgba(0, 173, 181, 0.03);
+}
+
+.cv-upload-zone svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--primary);
+}
+
+.cv-upload-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.cv-upload-hint {
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+}
+
+/* CV Uploading */
+.cv-uploading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.cv-upload-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-color, #e5e7eb);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: cv-spin 0.6s linear infinite;
+}
+
+@keyframes cv-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* CV Or Row */
+.cv-or-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cv-or-row::before,
+.cv-or-row::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-color, #e5e7eb);
+}
+
+.cv-or-row span {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Modal form */
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
