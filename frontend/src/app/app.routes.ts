@@ -8,10 +8,17 @@ import {
   CompanyEffects,
   OfferEffects,
 } from './features/company-offers/store';
+import {
+  APPLICATIONS_FEATURE_KEY,
+  applicationsReducers,
+  ApplicationEffects,
+} from './features/applications/store';
 
-const companyOffersProviders = [
+const featureProviders = [
   provideState(COMPANY_OFFERS_FEATURE_KEY, companyOffersReducers),
   provideEffects(CompanyEffects, OfferEffects),
+  provideState(APPLICATIONS_FEATURE_KEY, applicationsReducers),
+  provideEffects(ApplicationEffects),
 ];
 
 export const routes: Routes = [
@@ -19,7 +26,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./layouts/public-layout/public-layout').then(m => m.PublicLayoutComponent),
-    providers: [...companyOffersProviders],
+    providers: [...featureProviders],
     children: [
       {
         path: '',
@@ -87,7 +94,7 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./layouts/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent),
     canActivate: [authGuard],
-    providers: [...companyOffersProviders],
+    providers: [...featureProviders],
     children: [
       {
         path: '',
@@ -95,7 +102,7 @@ export const routes: Routes = [
       },
       {
         path: 'applications',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
+        loadComponent: () => import('./features/applications/pages/my-applications/my-applications').then(m => m.MyApplicationsComponent),
       },
       {
         path: 'saved-jobs',
@@ -122,6 +129,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/company-offers/pages/manage-offers/manage-offers').then(m => m.ManageOffersComponent),
       },
       {
+        path: 'offers/:offerId/applications',
+        canActivate: [companyGuard],
+        loadComponent: () => import('./features/applications/pages/offer-applications/offer-applications').then(m => m.OfferApplicationsComponent),
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
       },
@@ -137,7 +149,7 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./layouts/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent),
     canActivate: [authGuard, adminGuard],
-    providers: [...companyOffersProviders],
+    providers: [...featureProviders],
     children: [
       {
         path: '',
