@@ -1,0 +1,117 @@
+<div class="my-applications-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="document" size="lg" /> My Applications</h1>
+      <p>{{ totalElements() }} application{{ totalElements() !== 1 ? 's' : '' }} total</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="applications-list">
+      @for (i of [1,2,3]; track i) {
+        <app-ui-card>
+          <app-skeleton type="rectangle" height="120px" />
+        </app-ui-card>
+      }
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (applications().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="document" size="xl" /></div>
+        <h2>No Applications Yet</h2>
+        <p>Start exploring job offers and submit your first application!</p>
+        <app-ui-button variant="primary" routerLink="/jobs">
+          <app-icon name="briefcase" size="sm" /> Browse Jobs
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+  }
+
+  <!-- Applications List -->
+  @else {
+    <div class="applications-list">
+      @for (app of applications(); track app.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="application-card">
+            <div class="app-header">
+              <div class="app-title-row">
+                <div>
+                  <h3>{{ app.offer?.title || 'Job Offer #' + app.offerId }}</h3>
+                  @if (app.offer?.companyName) {
+                    <p class="company-name">{{ app.offer!.companyName }}</p>
+                  }
+                </div>
+                <app-ui-badge [variant]="getStatusVariant(app.status)" [pill]="true" size="sm">
+                  {{ statusLabels[app.status] }}
+                </app-ui-badge>
+              </div>
+              <div class="app-meta">
+                @if (app.offer?.contractType) {
+                  <app-ui-badge variant="info" size="sm">{{ contractLabels[app.offer!.contractType!] || app.offer!.contractType }}</app-ui-badge>
+                }
+                @if (app.offer?.location) {
+                  <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ app.offer!.location }}</span>
+                }
+                @if (app.createdAt) {
+                  <span class="meta-item"><app-icon name="calendar" size="sm" /> Applied {{ app.createdAt | date:'mediumDate' }}</span>
+                }
+              </div>
+            </div>
+
+            @if (app.coverLetter) {
+              <p class="cover-letter-preview">{{ app.coverLetter.length > 120 ? (app.coverLetter | slice:0:120) + '...' : app.coverLetter }}</p>
+            }
+
+            @if (app.companyNote) {
+              <div class="company-note">
+                <app-icon name="document" size="sm" />
+                <span>Company note: {{ app.companyNote }}</span>
+              </div>
+            }
+
+            <div class="app-actions">
+              <a [href]="app.cvUrl" target="_blank" class="cv-link">
+                <app-icon name="document" size="sm" /> View CV
+              </a>
+              @if (canWithdraw(app)) {
+                <app-ui-button variant="danger" size="sm" [loading]="saving()" (clicked)="requestWithdraw(app)">
+                  <app-icon name="x-mark" size="sm" /> Withdraw
+                </app-ui-button>
+              }
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() === 0" (clicked)="goToPage(currentPage() - 1)">
+          Previous
+        </app-ui-button>
+        @for (p of pages; track p) {
+          <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">{{ p + 1 }}</button>
+        }
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() >= totalPages() - 1" (clicked)="goToPage(currentPage() + 1)">
+          Next
+        </app-ui-button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Withdraw Confirm Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmWithdraw()"
+  (cancelled)="cancelConfirm()" />

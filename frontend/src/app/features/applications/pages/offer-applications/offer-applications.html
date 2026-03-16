@@ -1,0 +1,148 @@
+<div class="offer-applications-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="user" size="lg" /> Applications</h1>
+      <p>{{ totalElements() }} application{{ totalElements() !== 1 ? 's' : '' }} for this offer</p>
+    </div>
+    <div class="filter-row">
+      <app-ui-select
+        [options]="statusFilterOptions"
+        [value]="statusFilter()"
+        (valueChange)="onFilterChange($event)"
+        placeholder="Filter by status" />
+    </div>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="applications-list">
+      @for (i of [1,2,3]; track i) {
+        <app-ui-card>
+          <app-skeleton type="rectangle" height="140px" />
+        </app-ui-card>
+      }
+    </div>
+  }
+
+  <!-- Empty -->
+  @else if (applications().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="user" size="xl" /></div>
+        <h2>No Applications</h2>
+        <p>No applications have been submitted for this offer yet.</p>
+      </div>
+    </app-ui-card>
+  }
+
+  <!-- Applications List -->
+  @else {
+    <div class="applications-list">
+      @for (app of applications(); track app.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="application-card">
+            <div class="app-header">
+              <div class="app-title-row">
+                <div class="candidate-info">
+                  <div class="candidate-avatar">
+                    {{ (app.candidate?.firstName?.[0] ?? '') + (app.candidate?.lastName?.[0] ?? '?') }}
+                  </div>
+                  <div>
+                    <h3>{{ (app.candidate?.firstName ?? '') + ' ' + (app.candidate?.lastName ?? 'Candidate') }}</h3>
+                    @if (app.candidate?.email) {
+                      <p class="candidate-email">{{ app.candidate!.email }}</p>
+                    }
+                    @if (app.candidate?.city) {
+                      <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ app.candidate!.city }}</span>
+                    }
+                  </div>
+                </div>
+                <app-ui-badge [variant]="getStatusVariant(app.status)" [pill]="true" size="sm">
+                  {{ statusLabels[app.status] }}
+                </app-ui-badge>
+              </div>
+            </div>
+
+            @if (app.coverLetter) {
+              <p class="cover-letter-preview">{{ app.coverLetter.length > 200 ? (app.coverLetter | slice:0:200) + '...' : app.coverLetter }}</p>
+            }
+
+            <div class="app-meta-row">
+              @if (app.createdAt) {
+                <span class="meta-item"><app-icon name="calendar" size="sm" /> Applied {{ app.createdAt | date:'mediumDate' }}</span>
+              }
+            </div>
+
+            @if (app.companyNote) {
+              <div class="company-note">
+                <app-icon name="document" size="sm" />
+                <span>{{ app.companyNote }}</span>
+              </div>
+            }
+
+            <div class="app-actions">
+              <a [href]="app.cvUrl" target="_blank" class="cv-link">
+                <app-icon name="document" size="sm" /> View CV
+              </a>
+              @if (canUpdateStatus(app)) {
+                <app-ui-button variant="primary" size="sm" [loading]="saving()" (clicked)="openStatusUpdate(app)">
+                  <app-icon name="pencil" size="sm" /> Update Status
+                </app-ui-button>
+              }
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() === 0" (clicked)="goToPage(currentPage() - 1)">
+          Previous
+        </app-ui-button>
+        @for (p of pages; track p) {
+          <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">{{ p + 1 }}</button>
+        }
+        <app-ui-button variant="outline" size="sm" [disabled]="currentPage() >= totalPages() - 1" (clicked)="goToPage(currentPage() + 1)">
+          Next
+        </app-ui-button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Status Update Modal -->
+<app-ui-modal [isOpen]="showStatusModal()" title="Update Application Status" size="md" (closed)="closeStatusModal()">
+  <div class="modal-form">
+    <app-ui-select
+      label="New Status"
+      [required]="true"
+      [options]="statusUpdateOptions"
+      [(value)]="newStatus" />
+
+    <app-ui-textarea
+      label="Internal Note (Optional)"
+      placeholder="Add a note about this decision..."
+      [(value)]="companyNote"
+      [rows]="3" />
+  </div>
+
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="closeStatusModal()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [disabled]="!newStatus()" (clicked)="submitStatusUpdate()">
+      Update Status
+    </app-ui-button>
+  </div>
+</app-ui-modal>
+
+<!-- Confirm Dialog -->
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmStatusUpdate()"
+  (cancelled)="cancelConfirm()" />
