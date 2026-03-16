@@ -6,6 +6,7 @@ import io.github.tawdi.jobboard.auth_user_service.entity.Role;
 import io.github.tawdi.jobboard.auth_user_service.entity.User;
 import io.github.tawdi.jobboard.auth_user_service.entity.VerificationToken;
 import io.github.tawdi.jobboard.auth_user_service.exceptions.*;
+import io.github.tawdi.jobboard.auth_user_service.service.NotificationProducerService;
 import io.github.tawdi.jobboard.auth_user_service.jwt.JwtService;
 import io.github.tawdi.jobboard.auth_user_service.repository.RoleRepository;
 import io.github.tawdi.jobboard.auth_user_service.repository.UserRepository;
@@ -29,10 +30,11 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final VerificationTokenService verificationTokenService;
-    private final EmailService emailService;
+    private final NotificationProducerService notificationProducerService;
 
     @Value("${job-board.jwt.expiration-ms:3600000}")
     private Long jwtExpirationMs;
+
 
     public LoginResponse login(LoginRequest request) {
         String loginField = request.getEmail() != null ? request.getEmail() : request.getUsername();
@@ -97,7 +99,9 @@ public class AuthService {
         User savedUser = userRepository.save(user);
 
         VerificationToken verificationToken = verificationTokenService.createEmailVerificationToken(savedUser);
-        emailService.sendVerificationEmail(savedUser, verificationToken.getToken());
+        
+        // Publish async Kafka event instead of blocking to send an email
+        notificationProducerService.sendWelcomeEmail(savedUser.getId(), savedUser.getEmail(), savedUser.getRole().getName());
 
         log.info("User registered successfully: {}", savedUser.getEmail());
 
@@ -133,7 +137,7 @@ public class AuthService {
         }
 
         VerificationToken verificationToken = verificationTokenService.createEmailVerificationToken(user);
-        emailService.sendVerificationEmail(user, verificationToken.getToken());
+        notificationProducerService.sendVerificationEmail(user.getId(), user.getEmail(), verificationToken.getToken());
 
         log.info("Verification email resent to: {}", email);
     }
@@ -148,7 +152,7 @@ public class AuthService {
         }
 
         VerificationToken resetToken = verificationTokenService.createPasswordResetToken(user);
-        emailService.sendPasswordResetEmail(user, resetToken.getToken());
+        notificationProducerService.sendPasswordResetEmail(user.getId(), user.getEmail(), resetToken.getToken());
 
         log.info("Password reset email sent to: {}", email);
     }
