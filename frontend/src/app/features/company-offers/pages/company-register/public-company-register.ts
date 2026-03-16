@@ -94,7 +94,8 @@ export class PublicCompanyRegisterComponent {
     return valid;
   }
 
-  async submit(): Promise<void> {
+  async handleSubmit(event: Event): Promise<void> {
+    event.preventDefault();
     if (!this.validate()) return;
 
     this.saving.set(true);

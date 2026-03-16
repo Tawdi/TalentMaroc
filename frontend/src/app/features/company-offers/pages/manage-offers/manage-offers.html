@@ -73,6 +73,10 @@
             </div>
 
             <div class="offer-actions">
+              <app-ui-button variant="outline" size="sm" (clicked)="viewApplications(offer)">
+                <app-icon name="user" size="sm" /> Applications ({{ offer.applicationsCount ?? 0 }})
+              </app-ui-button>
+
               <app-ui-button variant="ghost" size="sm" (clicked)="openEdit(offer)">
                 <app-icon name="pencil" size="sm" /> Edit
               </app-ui-button>

@@ -1,4 +1,5 @@
 import { Component, inject, computed, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { DatePipe, SlicePipe } from '@angular/common';
 import {
@@ -44,6 +45,7 @@ import {
 export class ManageOffersComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly userId = computed(() => this.authService.currentUser()?.id ?? '');
   readonly offers = this.store.selectSignal(selectMyOffers);
@@ -281,6 +283,10 @@ export class ManageOffersComponent implements OnInit {
 
   clearError(): void {
     this.store.dispatch(OfferActions.clearError());
+  }
+
+  viewApplications(offer: OfferResponse): void {
+    this.router.navigate(['/dashboard/offers', offer.id, 'applications']);
   }
 
   goToPage(page: number): void {

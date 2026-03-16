@@ -1,105 +1,319 @@
-@if (success()) {
-  <div class="register-page">
-    <app-ui-card>
-      <div class="success-state">
-        <div class="success-icon">
-          <app-icon name="check" size="xl" />
+<div class="auth-page">
+  <div class="auth-container animate-fade-in">
+    <!-- Left Side - Branding -->
+    <div class="auth-branding">
+      <div class="branding-content">
+        <a routerLink="/" class="logo">
+          <span class="logo-talent">Talent</span><span class="logo-maroc">Maroc</span>
+        </a>
+        <h1>Build Your Dream Team</h1>
+        <p>Create your company profile and connect with Morocco's top talent.</p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">
+              <!-- Building Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                <path d="M9 22v-4h6v4"></path>
+                <path d="M8 6h.01"></path>
+                <path d="M16 6h.01"></path>
+                <path d="M12 6h.01"></path>
+                <path d="M12 10h.01"></path>
+                <path d="M12 14h.01"></path>
+                <path d="M16 10h.01"></path>
+                <path d="M16 14h.01"></path>
+                <path d="M8 10h.01"></path>
+                <path d="M8 14h.01"></path>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>Company Profile</h3>
+              <p>Showcase your brand and culture</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <!-- Briefcase Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>Post Jobs</h3>
+              <p>Reach thousands of qualified candidates</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <!-- Users Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 00-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 010 7.75"></path>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>Hire Talent</h3>
+              <p>Find the perfect fit for your team</p>
+            </div>
+          </div>
         </div>
-        <h2>Company Registration Submitted!</h2>
-        <p>Your company <strong>{{ company()!.companyName }}</strong> has been submitted for review.</p>
-        <p class="text-muted">An administrator will review and approve your company. You'll be notified once approved.</p>
       </div>
-    </app-ui-card>
-  </div>
-} @else {
-  <div class="register-page">
-    <div class="register-header">
-      <h1><app-icon name="building" size="lg" /> Register Your Company</h1>
-      <p>Fill in your company details to get started. Your registration will be reviewed by an administrator.</p>
     </div>
 
-    @if (error()) {
-      <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
-    }
-
-    <app-ui-card>
-      <form (ngSubmit)="submit()" class="register-form">
-        <h2 class="form-section-title">Company Information</h2>
-
-        <div class="form-grid">
-          <app-ui-input
-            label="Company Name"
-            [required]="true"
-            placeholder="Your company name"
-            [(value)]="companyName"
-            [errorText]="companyNameError()" />
-
-          <app-ui-input
-            label="Sector / Industry"
-            [required]="true"
-            placeholder="e.g. Technology, Finance, Healthcare"
-            [(value)]="sector"
-            [errorText]="sectorError()" />
+    <!-- Right Side - Register Form -->
+    <div class="auth-form-section">
+      <div class="auth-form-container">
+        <div class="form-header">
+          <h2>Register Company</h2>
+          <p>Join TalentMaroc as an employer</p>
         </div>
 
-        <app-ui-textarea
-          label="Description"
-          placeholder="Tell us about your company..."
-          [(value)]="description"
-          [rows]="4" />
+        @if (error()) {
+          <div class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <span>{{ error() }}</span>
+          </div>
+        }
 
-        <div class="form-grid">
-          <app-ui-input
-            label="Website"
-            type="url"
-            placeholder="https://yourcompany.com"
-            [(value)]="website" />
+        @if (success()) {
+          <div class="success-message">
+            <div class="success-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+              </svg>
+            </div>
+            <h3>Registration Submitted!</h3>
+            <p>Your company <strong>{{ company()!.companyName }}</strong> has been submitted for review. An administrator will review and approve your company. You'll be notified once approved.</p>
+            <a routerLink="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+          </div>
+        } @else {
 
-          <app-ui-input
-            label="Phone"
-            type="tel"
-            placeholder="+212 6XX XXX XXX"
-            [(value)]="phone" />
-        </div>
+        <form (submit)="handleSubmit($event)" class="auth-form">
+          <!-- Company Name & Sector Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="companyName" class="form-label">Company Name</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                  <path d="M9 22v-4h6v4"></path>
+                </svg>
+                <input
+                  type="text"
+                  id="companyName"
+                  class="form-input"
+                  [class.error]="companyNameError()"
+                  placeholder="Your company name"
+                  [value]="companyName()"
+                  (input)="companyName.set($any($event.target).value)"
+                />
+              </div>
+              @if (companyNameError()) {
+                <span class="form-error">{{ companyNameError() }}</span>
+              }
+            </div>
 
-        <h2 class="form-section-title">Address</h2>
+            <div class="form-group">
+              <label for="sector" class="form-label">Sector</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                <input
+                  type="text"
+                  id="sector"
+                  class="form-input"
+                  [class.error]="sectorError()"
+                  placeholder="e.g. Technology"
+                  [value]="sector()"
+                  (input)="sector.set($any($event.target).value)"
+                />
+              </div>
+              @if (sectorError()) {
+                <span class="form-error">{{ sectorError() }}</span>
+              }
+            </div>
+          </div>
 
-        <app-ui-input
-          label="Street"
-          placeholder="Street address"
-          [(value)]="street" />
+          <!-- Description (Textarea) -->
+          <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <div class="input-wrapper">
+              <textarea
+                id="description"
+                class="form-input"
+                style="padding-left: 0.875rem; min-height: 80px;"
+                placeholder="Tell us about your company..."
+                [value]="description()"
+                (input)="description.set($any($event.target).value)"
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
 
-        <div class="form-grid">
-          <app-ui-input
-            label="City"
-            placeholder="City"
-            [(value)]="city" />
+          <!-- Website & Phone Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="website" class="form-label">Website</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <input
+                  type="url"
+                  id="website"
+                  class="form-input"
+                  placeholder="https://yourcompany.com"
+                  [value]="website()"
+                  (input)="website.set($any($event.target).value)"
+                />
+              </div>
+            </div>
 
-          <app-ui-input
-            label="State / Region"
-            placeholder="State or region"
-            [(value)]="state" />
-        </div>
+            <div class="form-group">
+              <label for="phone" class="form-label">Phone</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <input
+                  type="tel"
+                  id="phone"
+                  class="form-input"
+                  placeholder="+212 6XX XXX XXX"
+                  [value]="phone()"
+                  (input)="phone.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+          </div>
 
-        <div class="form-grid">
-          <app-ui-input
-            label="ZIP / Postal Code"
-            placeholder="ZIP code"
-            [(value)]="zipCode" />
+          <div class="divider">
+            <span>Address Details</span>
+          </div>
 
-          <app-ui-input
-            label="Country"
-            placeholder="Country"
-            [(value)]="country" />
-        </div>
+          <!-- Street -->
+          <div class="form-group">
+            <label for="street" class="form-label">Street</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <input
+                type="text"
+                id="street"
+                class="form-input"
+                placeholder="Street address"
+                [value]="street()"
+                (input)="street.set($any($event.target).value)"
+              />
+            </div>
+          </div>
 
-        <div class="form-actions">
-          <app-ui-button type="submit" variant="primary" size="lg" [loading]="saving()" [fullWidth]="true">
-            <app-icon name="building" size="sm" /> Submit Registration
-          </app-ui-button>
-        </div>
-      </form>
-    </app-ui-card>
+          <!-- City & State Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="city" class="form-label">City</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <input
+                  type="text"
+                  id="city"
+                  class="form-input"
+                  placeholder="City"
+                  [value]="city()"
+                  (input)="city.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="state" class="form-label">State / Region</label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="state"
+                  class="form-input"
+                  style="padding-left: 0.875rem;"
+                  placeholder="State or region"
+                  [value]="state()"
+                  (input)="state.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Country & Zip Code -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="country" class="form-label">Country</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <input
+                  type="text"
+                  id="country"
+                  class="form-input"
+                  placeholder="Country"
+                  [value]="country()"
+                  (input)="country.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="zipCode" class="form-label">ZIP / Postal Code</label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="zipCode"
+                  class="form-input"
+                  style="padding-left: 0.875rem;"
+                  placeholder="ZIP code"
+                  [value]="zipCode()"
+                  (input)="zipCode.set($any($event.target).value)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <app-ui-button
+              type="submit"
+              variant="primary"
+              [fullWidth]="true"
+              [loading]="saving()"
+              size="lg">
+              @if (saving()) {
+                Submiting...
+              } @else {
+                Submit Registration
+              }
+            </app-ui-button>
+          </div>
+        </form>
+        }
+      </div>
+    </div>
   </div>
-}
-
+</div>

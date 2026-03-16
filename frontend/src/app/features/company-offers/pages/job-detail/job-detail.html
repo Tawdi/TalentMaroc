@@ -103,11 +103,22 @@
         <!-- Apply CTA -->
         <app-ui-card>
           <div class="apply-card">
-            <h3>Interested in this position?</h3>
-            <p>Apply now and take the next step in your career.</p>
-            <app-ui-button variant="primary" size="lg" [fullWidth]="true">
-              Apply Now
-            </app-ui-button>
+            @if (applySuccess()) {
+              <div class="apply-success">
+                <app-icon name="check" size="lg" />
+                <h3>Application Submitted!</h3>
+                <p>Your application has been submitted successfully. You can track it in your dashboard.</p>
+              </div>
+            } @else {
+              <h3>Interested in this position?</h3>
+              <p>Apply now and take the next step in your career.</p>
+              @if (applyError()) {
+                <app-ui-alert type="error" [dismissible]="false">{{ applyError() }}</app-ui-alert>
+              }
+              <app-ui-button variant="primary" size="lg" [fullWidth]="true" (clicked)="openApplyModal()">
+                Apply Now
+              </app-ui-button>
+            }
           </div>
         </app-ui-card>
 
@@ -151,4 +162,111 @@
     </div>
   </div>
 }
+
+<!-- Apply Modal -->
+<app-ui-modal [isOpen]="isApplyModalOpen()" title="Apply for this Position" size="md" (closed)="closeApplyModal()">
+  <div class="modal-form">
+    @if (applyError()) {
+      <app-ui-alert type="error">{{ applyError() }}</app-ui-alert>
+    }
+    @if (cvError()) {
+      <app-ui-alert type="error" [dismissible]="true" (dismissed)="cvError.set(null)">{{ cvError() }}</app-ui-alert>
+    }
+
+    <!-- CV Section -->
+    <div class="cv-apply-section">
+      <label class="cv-section-label">Your CV / Resume</label>
+
+      @if (profileLoading()) {
+        <!-- Loading profile -->
+        <div class="cv-loading">
+          <app-skeleton width="100%" height="60px" />
+        </div>
+      } @else if (hasCv()) {
+        <!-- Existing CV found on profile -->
+        <div class="cv-attached">
+          <div class="cv-attached-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <div class="cv-attached-info">
+            <span class="cv-attached-name">{{ cvFileName() }}</span>
+            <span class="cv-attached-hint">PDF • From your profile</span>
+          </div>
+          <div class="cv-attached-check">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20,6 9,17 4,12"/>
+            </svg>
+          </div>
+        </div>
+        <!-- Replace option -->
+        <div class="cv-replace-row">
+          <label class="cv-replace-link">
+            <input type="file" accept=".pdf" (change)="onCvFileSelected($event)" hidden />
+            <span>Replace with a different CV</span>
+          </label>
+        </div>
+      } @else {
+        <!-- No CV found -->
+        <div class="cv-missing">
+          <div class="cv-missing-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14,2 14,8 20,8"/>
+              <line x1="12" y1="11" x2="12" y2="17"/>
+              <line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+          </div>
+          <div class="cv-missing-info">
+            <span class="cv-missing-title">No CV on your profile</span>
+            <span class="cv-missing-hint">Upload a PDF to apply for this position</span>
+          </div>
+        </div>
+
+        @if (cvUploading()) {
+          <div class="cv-uploading">
+            <div class="cv-upload-spinner"></div>
+            <span>Uploading your CV...</span>
+          </div>
+        } @else {
+          <label class="cv-upload-zone">
+            <input type="file" accept=".pdf" (change)="onCvFileSelected($event)" hidden />
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17,8 12,3 7,8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span class="cv-upload-text">Upload your CV</span>
+            <span class="cv-upload-hint">PDF only, max 10MB</span>
+          </label>
+        }
+
+        <div class="cv-or-row">
+          <span>or</span>
+        </div>
+        <app-ui-button variant="outline" size="sm" [fullWidth]="true" (clicked)="goToProfile()">
+          <app-icon name="user" size="sm" /> Go to My Profile to manage CV
+        </app-ui-button>
+      }
+    </div>
+
+    <!-- Cover Letter -->
+    <app-ui-textarea
+      label="Cover Letter (Optional)"
+      placeholder="Tell the employer why you'd be a great fit for this role..."
+      [(value)]="coverLetter"
+      [rows]="5" />
+  </div>
+
+  <div footer class="modal-footer-actions">
+    <app-ui-button variant="outline" (clicked)="closeApplyModal()">Cancel</app-ui-button>
+    <app-ui-button variant="primary" [loading]="applying()" [disabled]="!hasCv() || cvUploading()" (clicked)="submitApplication()">
+      <app-icon name="check" size="sm" /> Submit Application
+    </app-ui-button>
+  </div>
+</app-ui-modal>
 
