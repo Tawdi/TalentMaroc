@@ -29,18 +29,12 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
-  mail:
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
-    username: 830474a69ff1fd
-    password: 4898348e8874f5 # Use app password for Gmail
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-    default-encoding: UTF-8
+
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:localhost}:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   security:
     oauth2:
@@ -125,4 +119,4 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
