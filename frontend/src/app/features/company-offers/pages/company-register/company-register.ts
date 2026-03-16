@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { RouterLink } from '@angular/router';
 import { UiCard, UiInput, UiTextarea, UiButton, UiAlert, IconComponent } from '../../../../shared';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CreateCompanyRequest } from '../../../../core/models/company-offers.model';
@@ -13,7 +14,7 @@ import {
 @Component({
   selector: 'app-company-register',
   standalone: true,
-  imports: [UiCard, UiInput, UiTextarea, UiButton, UiAlert, IconComponent],
+  imports: [UiCard, UiInput, UiTextarea, UiButton, UiAlert, IconComponent, RouterLink],
   templateUrl: './company-register.html',
   styleUrl: './company-register.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,7 +62,8 @@ export class CompanyRegisterComponent {
     return valid;
   }
 
-  submit(): void {
+  handleSubmit(event: Event): void {
+    event.preventDefault();
     if (!this.validate()) return;
 
     const request: CreateCompanyRequest = {
