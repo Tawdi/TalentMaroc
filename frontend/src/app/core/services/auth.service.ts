@@ -13,6 +13,7 @@ import {
   CurrentUser,
   UserRole,
 } from '../models/auth.model';
+import { Page } from '../models/company-offers.model';
 import { environment } from '../../../environments/environment';
 
 const AUTH_STORAGE_KEY = 'talent_maroc_auth';
@@ -62,6 +63,26 @@ export class AuthService {
     const payload: RegisterRequest = {
       ...request,
       roleName: 'CANDIDATE',
+    };
+
+    return this.http.post<ApiResponse<UserResponse>>(`${this.apiUrl}/register`, payload).pipe(
+      tap(() => this._isLoading.set(false)),
+      catchError((error) => {
+        this._isLoading.set(false);
+        return this.handleError(error);
+      })
+    );
+  }
+
+  /**
+   * Register a new Company
+   */
+  registerCompany(request: RegisterRequest): Observable<ApiResponse<UserResponse>> {
+    this._isLoading.set(true);
+
+    const payload: RegisterRequest = {
+      ...request,
+      roleName: 'COMPANY',
     };
 
     return this.http.post<ApiResponse<UserResponse>>(`${this.apiUrl}/register`, payload).pipe(
@@ -350,5 +371,15 @@ export class AuthService {
 
     return throwError(() => new Error(errorMessage));
   }
-}
 
+  // Admin methods
+  getAllUsers(page: number = 0, size: number = 20): Observable<Page<UserResponse>> {
+    return this.http.get<ApiResponse<Page<UserResponse>>>(`${environment.apiUrl}/auth/api/users?page=${page}&size=${size}`)
+      .pipe(map(res => res.data!));
+  }
+
+  deleteUser(userId: string): Observable<void> {
+    return this.http.delete<ApiResponse<void>>(`${environment.apiUrl}/auth/api/users/${userId}`)
+      .pipe(map(() => void 0));
+  }
+}
