@@ -84,9 +84,12 @@ export class CvSectionComponent {
     });
   }
 
-  deleteCv(): void {
-    if (!confirm('Are you sure you want to delete your CV?')) return;
+  requestDelete(): void {
+    this.showConfirmDialog.set(true);
+  }
 
+  confirmDelete(): void {
+    this.showConfirmDialog.set(false);
     this.profileService.deleteCv(this.userId()).subscribe({
       next: () => {
         this.success.set('CV deleted.');
@@ -95,5 +98,12 @@ export class CvSectionComponent {
       error: () => this.error.set('Failed to delete CV.'),
     });
   }
-}
 
+  cancelDelete(): void {
+    this.showConfirmDialog.set(false);
+  }
+
+  deleteCv(): void {
+    this.requestDelete();
+  }
+}

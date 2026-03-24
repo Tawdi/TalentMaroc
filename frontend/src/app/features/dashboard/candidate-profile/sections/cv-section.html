@@ -22,7 +22,7 @@
         </div>
         <div class="cv-actions">
           <app-ui-button variant="outline" size="sm" (clicked)="download()"><app-icon name="arrow-down-tray" size="sm" /> Download</app-ui-button>
-          <app-ui-button variant="danger" size="sm" (clicked)="deleteCv()"><app-icon name="trash" size="sm" /> Delete</app-ui-button>
+          <app-ui-button variant="danger" size="sm" (clicked)="requestDelete()"><app-icon name="trash" size="sm" /> Delete</app-ui-button>
         </div>
       </div>
     }
@@ -47,3 +47,8 @@
   </div>
 </app-ui-card>
 
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()" />

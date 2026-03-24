@@ -68,10 +68,22 @@ export class CompanyService {
       .pipe(map((res) => res.data ?? []));
   }
 
+  getAllCompanies(page = 0, size = 20): Observable<Page<CompanySummaryResponse>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http
+      .get<ApiResponse<Page<CompanySummaryResponse>>>(`${this.adminUrl}`, { params })
+      .pipe(map((res) => res.data!));
+  }
+
+  deleteCompanyById(companyId: number): Observable<void> {
+    return this.http
+      .delete<ApiResponse<void>>(`${this.adminUrl}/${companyId}`)
+      .pipe(map(() => void 0));
+  }
+
   validateCompany(companyId: number, request: ValidateCompanyRequest): Observable<CompanyResponse> {
     return this.http
       .put<ApiResponse<CompanyResponse>>(`${this.adminUrl}/${companyId}/validate`, request)
       .pipe(map((res) => res.data!));
   }
 }
-

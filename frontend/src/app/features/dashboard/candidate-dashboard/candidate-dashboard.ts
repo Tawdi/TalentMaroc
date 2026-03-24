@@ -27,9 +27,7 @@ import {
   selectPublicLoading,
   selectOfferError,
 } from '../../company-offers/store';
-
-const SAVED_JOBS_STORAGE_KEY = 'candidate_saved_jobs';
-const JOB_ALERTS_STORAGE_KEY = 'candidate_job_alerts';
+import { SavedJobsActions, selectSavedJobsTotal } from './store';
 
 @Component({
   selector: 'app-candidate-dashboard',
@@ -66,8 +64,7 @@ export class CandidateDashboardComponent implements OnInit {
   readonly profileError = signal<string | null>(null);
   readonly profileNotFound = signal(false);
 
-  readonly savedJobsCount = signal(0);
-  readonly alertsCount = signal(0);
+  readonly savedJobsTotal = this.store.selectSignal(selectSavedJobsTotal);
 
   readonly statusLabels = APPLICATION_STATUS_LABELS;
   readonly getStatusVariant = getApplicationStatusVariant;
@@ -94,7 +91,7 @@ export class CandidateDashboardComponent implements OnInit {
     this.loadApplications();
     this.loadRecommendedOffers();
     this.loadProfile();
-    this.refreshLocalCounts();
+    this.loadSavedJobs();
   }
 
   loadApplications(): void {
@@ -131,20 +128,9 @@ export class CandidateDashboardComponent implements OnInit {
     });
   }
 
-  private refreshLocalCounts(): void {
-    this.savedJobsCount.set(this.readStorageCount(SAVED_JOBS_STORAGE_KEY));
-    this.alertsCount.set(this.readStorageCount(JOB_ALERTS_STORAGE_KEY));
-  }
-
-  private readStorageCount(key: string): number {
-    if (typeof localStorage === 'undefined') return 0;
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) return 0;
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed) ? parsed.length : 0;
-    } catch {
-      return 0;
-    }
+  loadSavedJobs(): void {
+    const uid = this.userId();
+    if (!uid) return;
+    this.store.dispatch(SavedJobsActions.loadSavedJobs({ userId: uid }));
   }
 }

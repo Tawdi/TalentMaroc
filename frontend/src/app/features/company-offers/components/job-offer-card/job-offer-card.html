@@ -1,0 +1,53 @@
+<div class="job-card">
+  <div class="job-card-header">
+    <div class="company-info">
+      @if (offer.company?.logoUrl) {
+        <img [src]="offer.company!.logoUrl" [alt]="offer.company!.companyName" class="company-logo" />
+      }
+      @else {
+        <div class="company-logo-fallback">
+          <app-icon name="building" size="md" />
+        </div>
+      }
+      <div>
+        <h3 class="job-title">{{ offer.title }}</h3>
+        <p class="company-name">{{ offer.company?.companyName || 'Unknown company' }}</p>
+      </div>
+    </div>
+    @if (enableSave) {
+      <app-ui-button
+        size="sm"
+        variant="ghost"
+        [disabled]="saving"
+        (clicked)="handleToggleSave($event)">
+        <app-icon
+          [name]="isSaved ? 'bookmark-filled' : 'bookmark'"
+          size="sm"
+        />
+        {{ isSaved ? 'Saved' : 'Save job' }}
+      </app-ui-button>
+    }
+  </div>
+
+  <div class="job-tags">
+    <app-ui-badge variant="info" size="sm" [pill]="true">
+      {{ contractLabels[offer.contractType] || offer.contractType }}
+    </app-ui-badge>
+    @if (offer.location) {
+      <span class="tag"><app-icon name="map-pin" size="sm" /> {{ offer.location }}</span>
+    }
+    @if (offer.salaryRange) {
+      <span class="tag">💰 {{ offer.salaryRange }}</span>
+    }
+  </div>
+
+  <p class="job-description">{{ descriptionPreview }}</p>
+
+  <div class="job-footer">
+    <span class="time-ago"><app-icon name="clock" size="sm" /> {{ timeAgo(offer.createdAt) }}</span>
+    <app-ui-button variant="outline" size="sm" (clicked)="handleView($event)">
+      View Details
+    </app-ui-button>
+  </div>
+</div>
+

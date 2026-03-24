@@ -54,7 +54,12 @@ export const adminReducer = createReducer(
   on(AdminActions.loadUsersFailure, (state, { error }) => ({ ...state, loading: false, error })),
 
   on(AdminActions.deleteUser, (state) => ({ ...state, loading: true })),
-  on(AdminActions.deleteUserSuccess, (state) => ({ ...state, loading: false })),
+  on(AdminActions.deleteUserSuccess, (state, { userId }) => ({
+    ...state,
+    loading: false,
+    users: state.users.filter(user => user.id !== userId),
+    usersTotalElements: Math.max(0, state.usersTotalElements - 1),
+  })),
   on(AdminActions.deleteUserFailure, (state, { error }) => ({ ...state, loading: false, error })),
 
   // Companies
@@ -71,11 +76,22 @@ export const adminReducer = createReducer(
   on(AdminActions.loadCompaniesFailure, (state, { error }) => ({ ...state, loading: false, error })),
 
   on(AdminActions.deleteCompany, (state) => ({ ...state, loading: true })),
-  on(AdminActions.deleteCompanySuccess, (state) => ({ ...state, loading: false })),
+  on(AdminActions.deleteCompanySuccess, (state, { companyId }) => ({
+    ...state,
+    loading: false,
+    companies: state.companies.filter(company => company.id !== companyId),
+    companiesTotalElements: Math.max(0, state.companiesTotalElements - 1),
+  })),
   on(AdminActions.deleteCompanyFailure, (state, { error }) => ({ ...state, loading: false, error })),
 
   on(AdminActions.validateCompany, (state) => ({ ...state, loading: true })),
-  on(AdminActions.validateCompanySuccess, (state) => ({ ...state, loading: false })),
+  on(AdminActions.validateCompanySuccess, (state, { company }) => ({
+    ...state,
+    loading: false,
+    companies: state.companies.map(existing => (existing.id === company.id
+      ? { ...existing, status: company.status, companyName: company.companyName, sector: company.sector }
+      : existing)),
+  })),
   on(AdminActions.validateCompanyFailure, (state, { error }) => ({ ...state, loading: false, error })),
 
   on(AdminActions.clearError, (state) => ({ ...state, error: null }))

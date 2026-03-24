@@ -6,7 +6,8 @@ export type IconName =
   | 'map-pin' | 'phone' | 'calendar' | 'link' | 'arrow-down-tray'
   | 'arrow-up-tray' | 'building' | 'chevron-right' | 'x-mark'
   | 'check' | 'exclamation-triangle' | 'information-circle'
-  | 'code-bracket' | 'sparkles' | 'clock';
+  | 'code-bracket' | 'sparkles' | 'clock'
+  | 'bookmark' | 'bookmark-filled';
 
 export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -88,6 +89,12 @@ export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
         }
         @case ('clock') {
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        }
+        @case ('bookmark') {
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3h10.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.147.64L12 17.25l-4.853 3.64a.75.75 0 0 1-1.147-.64V3.75a.75.75 0 0 1 .75-.75Z" />
+        }
+        @case ('bookmark-filled') {
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3h10.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.147.64L12 17.25l-4.853 3.64a.75.75 0 0 1-1.147-.64V3.75a.75.75 0 0 1 .75-.75Z" fill="currentColor" stroke="none" />
         }
         @case ('exclamation-triangle') {
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />

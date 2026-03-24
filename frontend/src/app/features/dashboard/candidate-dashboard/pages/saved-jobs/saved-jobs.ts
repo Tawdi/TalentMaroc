@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, signal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { Store } from '@ngrx/store';
 import {
   UiCard, UiButton, UiBadge, UiAlert, IconComponent,
   UiConfirmDialog, ConfirmDialogData,
@@ -8,15 +9,14 @@ import {
 } from '../../../../../shared';
 import { OFFER_CONTRACT_TYPE_LABELS } from '../../../../../core/models/company-offers.model';
 import { AuthService } from '../../../../../core/services/auth.service';
-import { SavedJobsService } from '../../../../../core/services/saved-jobs.service';
-import { SavedJob as SavedJobDto } from '../../../../../core/models/saved-jobs.model';
-
-type SavedJob = SavedJobDto & {
-  title?: string;
-  companyName?: string;
-  location?: string;
-  contractType?: string;
-};
+import { SavedJob } from '../../../../../core/models/saved-jobs.model';
+import {
+  SavedJobsActions,
+  selectSavedJobs,
+  selectSavedJobsLoading,
+  selectSavedJobsError,
+  selectSavedJobsPendingOfferIds,
+} from '../../store';
 
 @Component({
   selector: 'app-saved-jobs',
@@ -31,11 +31,12 @@ type SavedJob = SavedJobDto & {
 })
 export class SavedJobsComponent implements OnInit {
   private readonly authService = inject(AuthService);
-  private readonly savedJobsService = inject(SavedJobsService);
+  private readonly store = inject(Store);
 
-  readonly savedJobs = signal<SavedJob[]>([]);
-  readonly error = signal<string | null>(null);
-  readonly loading = signal(false);
+  readonly savedJobs = this.store.selectSignal(selectSavedJobs);
+  readonly error = this.store.selectSignal(selectSavedJobsError);
+  readonly loading = this.store.selectSignal(selectSavedJobsLoading);
+  readonly pendingOfferIds = this.store.selectSignal(selectSavedJobsPendingOfferIds);
 
   readonly contractLabels: Record<string, string> = OFFER_CONTRACT_TYPE_LABELS as Record<string, string>;
 
@@ -62,18 +63,7 @@ export class SavedJobsComponent implements OnInit {
   loadSavedJobs(): void {
     const uid = this.userId;
     if (!uid) return;
-    this.loading.set(true);
-    this.error.set(null);
-    this.savedJobsService.getSavedJobs(uid).subscribe({
-      next: (jobs) => {
-        this.savedJobs.set(jobs);
-        this.loading.set(false);
-      },
-      error: (err) => {
-        this.error.set(err?.error?.message || 'Unable to load saved jobs.');
-        this.loading.set(false);
-      },
-    });
+    this.store.dispatch(SavedJobsActions.loadSavedJobs({ userId: uid }));
   }
 
   requestRemove(job: SavedJob): void {
@@ -95,19 +85,9 @@ export class SavedJobsComponent implements OnInit {
     const uid = this.userId;
     if (!uid) return;
 
-    this.savedJobsService.removeJob(uid, job.offerId).subscribe({
-      next: () => {
-        const next = this.savedJobs().filter((j) => j.id !== job.id);
-        this.savedJobs.set(next);
-        this.showConfirmDialog.set(false);
-        this.confirmTarget.set(null);
-      },
-      error: (err) => {
-        this.error.set(err?.error?.message || 'Failed to remove saved job.');
-        this.showConfirmDialog.set(false);
-        this.confirmTarget.set(null);
-      },
-    });
+    this.store.dispatch(SavedJobsActions.removeJob({ userId: uid, offerId: job.offerId }));
+    this.showConfirmDialog.set(false);
+    this.confirmTarget.set(null);
   }
 
   cancelRemove(): void {
@@ -116,6 +96,10 @@ export class SavedJobsComponent implements OnInit {
   }
 
   clearError(): void {
-    this.error.set(null);
+    this.store.dispatch(SavedJobsActions.clearSavedJobsError());
+  }
+
+  isPending(offerId: number): boolean {
+    return this.pendingOfferIds().includes(offerId);
   }
 }

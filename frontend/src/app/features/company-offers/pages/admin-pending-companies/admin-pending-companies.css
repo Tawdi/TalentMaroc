@@ -1,12 +1,11 @@
 .admin-page {
-  max-width: 960px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-
 .page-header {
   display: flex;
   justify-content: space-between;

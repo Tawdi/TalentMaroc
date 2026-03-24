@@ -84,43 +84,16 @@
     <div class="jobs-grid">
       @for (offer of offers(); track offer.id) {
         <app-ui-card [hoverable]="true">
-          <div class="job-card" (click)="viewOffer(offer)">
-            <div class="job-card-header">
-              <div class="company-info">
-                @if (offer.company?.logoUrl) {
-                  <img [src]="offer.company!.logoUrl" [alt]="offer.company!.companyName" class="company-logo" />
-                } @else {
-                  <div class="company-logo-fallback">
-                    <app-icon name="building" size="md" />
-                  </div>
-                }
-                <div>
-                  <h3 class="job-title">{{ offer.title }}</h3>
-                  <p class="company-name">{{ offer.company?.companyName }}</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="job-tags">
-              <app-ui-badge variant="info" size="sm" [pill]="true">{{ contractLabels[offer.contractType] }}</app-ui-badge>
-              @if (offer.location) {
-                <span class="tag"><app-icon name="map-pin" size="sm" /> {{ offer.location }}</span>
-              }
-              @if (offer.salaryRange) {
-                <span class="tag">💰 {{ offer.salaryRange }}</span>
-              }
-            </div>
-
-            <p class="job-description">{{ offer.description | slice:0:180 }}{{ offer.description.length > 180 ? '...' : '' }}</p>
-
-            <div class="job-footer">
-              <span class="time-ago"><app-icon name="clock" size="sm" /> {{ getTimeAgo(offer.createdAt) }}</span>
-              <app-ui-button variant="outline" size="sm">View Details</app-ui-button>
-            </div>
-          </div>
-        </app-ui-card>
-      }
-    </div>
+          <app-job-offer-card
+            [offer]="offer"
+            [isSaved]="isOfferSaved(offer.id)"
+            [saving]="isOfferPending(offer.id)"
+            (view)="viewOffer($event)"
+            (toggleSave)="toggleSave($event)"
+          />
+         </app-ui-card>
+       }
+     </div>
 
     <!-- Pagination -->
     @if (totalPages() > 1) {

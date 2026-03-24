@@ -14,6 +14,7 @@ import {
   ApplicationEffects,
 } from './features/applications/store';
 import { adminReducer, ADMIN_FEATURE_KEY, AdminEffects } from './features/dashboard/admin-dashboard/store';
+import { savedJobsReducer, SAVED_JOBS_FEATURE_KEY, SavedJobsEffects } from './features/dashboard/candidate-dashboard/store';
 import {
   LoginComponent,
   RegisterComponent,
@@ -28,6 +29,8 @@ const featureProviders = [
   provideEffects(CompanyEffects, OfferEffects),
   provideState(APPLICATIONS_FEATURE_KEY, applicationsReducers),
   provideEffects(ApplicationEffects),
+  provideState(SAVED_JOBS_FEATURE_KEY, savedJobsReducer),
+  provideEffects(SavedJobsEffects),
 ];
 
 export const routes: Routes = [

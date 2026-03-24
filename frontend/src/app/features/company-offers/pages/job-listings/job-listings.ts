@@ -1,7 +1,6 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { SlicePipe } from '@angular/common';
 import {
   UiCard, UiInput, UiButton, UiAlert, UiBadge, UiSelect,
   IconComponent, Skeleton,
@@ -11,7 +10,6 @@ import {
   OfferContractType,
   OFFER_CONTRACT_TYPE_LABELS,
   OFFER_CONTRACT_TYPE_OPTIONS,
-  getOfferStatusVariant,
 } from '../../../../core/models/company-offers.model';
 import {
   OfferActions,
@@ -22,13 +20,20 @@ import {
   selectPublicCurrentPage,
   selectOfferError,
 } from '../../store';
+import { JobOfferCardComponent } from '../../components/job-offer-card/job-offer-card';
+import { AuthService } from '../../../../core/services/auth.service';
+import {
+  SavedJobsActions,
+  selectSavedJobsEntities,
+  selectSavedJobsPendingOfferIds,
+} from '../../../dashboard/candidate-dashboard/store';
 
 @Component({
   selector: 'app-job-listings',
   standalone: true,
   imports: [
     UiCard, UiInput, UiButton, UiAlert, UiBadge, UiSelect,
-    IconComponent, Skeleton, SlicePipe, RouterLink,
+    IconComponent, Skeleton, RouterLink, JobOfferCardComponent,
   ],
   templateUrl: './job-listings.html',
   styleUrl: './job-listings.css',
@@ -37,6 +42,7 @@ import {
 export class JobListingsComponent implements OnInit {
   private readonly store = inject(Store);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   readonly offers = this.store.selectSignal(selectPublicOffers);
   readonly loading = this.store.selectSignal(selectPublicLoading);
@@ -44,6 +50,8 @@ export class JobListingsComponent implements OnInit {
   readonly totalPages = this.store.selectSignal(selectPublicTotalPages);
   readonly currentPage = this.store.selectSignal(selectPublicCurrentPage);
   readonly error = this.store.selectSignal(selectOfferError);
+  readonly savedJobsEntities = this.store.selectSignal(selectSavedJobsEntities);
+  readonly pendingOfferIds = this.store.selectSignal(selectSavedJobsPendingOfferIds);
 
   readonly contractLabels = OFFER_CONTRACT_TYPE_LABELS;
   readonly contractOptions = [
@@ -58,6 +66,7 @@ export class JobListingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.search();
+    this.loadSavedJobs();
   }
 
   search(page = 0): void {
@@ -98,19 +107,31 @@ export class JobListingsComponent implements OnInit {
     return Array.from({ length: total }, (_, i) => i);
   }
 
-  getTimeAgo(dateStr?: string): string {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    return `${Math.floor(diffDays / 30)} months ago`;
+  isOfferSaved(offerId: number): boolean {
+    return !!this.savedJobsEntities()[offerId];
+  }
+
+  isOfferPending(offerId: number): boolean {
+    return this.pendingOfferIds().includes(offerId);
+  }
+
+  toggleSave(offer: OfferResponse): void {
+    const user = this.authService.currentUser();
+    if (!user) {
+      this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+
+    if (this.isOfferSaved(offer.id)) {
+      this.store.dispatch(SavedJobsActions.removeJob({ userId: user.id, offerId: offer.id }));
+    } else {
+      this.store.dispatch(SavedJobsActions.saveJob({ userId: user.id, offer }));
+    }
+  }
+
+  private loadSavedJobs(): void {
+    const user = this.authService.currentUser();
+    if (!user) return;
+    this.store.dispatch(SavedJobsActions.loadSavedJobs({ userId: user.id }));
   }
 }
-
-
-
