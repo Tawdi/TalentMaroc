@@ -1,0 +1,23 @@
+<div class="messages-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="document" size="lg" /> Messages</h1>
+      <p>Communicate with candidates who applied to your offers.</p>
+    </div>
+  </div>
+
+  <app-ui-card>
+    <div class="empty-state">
+      <div class="empty-icon"><app-icon name="document" size="xl" /></div>
+      <h2>No messages yet</h2>
+      <p>When candidates reach out, conversations will appear here.</p>
+      <div class="actions">
+        <app-ui-button variant="primary" routerLink="/dashboard/offers">
+          <app-icon name="briefcase" size="sm" /> View Offers
+        </app-ui-button>
+        <app-ui-button variant="outline" routerLink="/dashboard/company-profile">Update Profile</app-ui-button>
+      </div>
+    </div>
+  </app-ui-card>
+</div>
+

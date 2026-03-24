@@ -1,0 +1,160 @@
+<div class="company-dashboard">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="building" size="lg" /> Company Dashboard</h1>
+      <p>Welcome back, {{ userName() }}. Manage your company presence and job offers.</p>
+    </div>
+    <div class="header-actions">
+      <app-ui-button variant="primary" routerLink="/dashboard/offers">
+        <app-icon name="briefcase" size="sm" /> Manage Offers
+      </app-ui-button>
+      <app-ui-button variant="outline" routerLink="/dashboard/company-profile">
+        <app-icon name="building" size="sm" /> Company Profile
+      </app-ui-button>
+    </div>
+  </div>
+
+  @if (companyError()) {
+    <app-ui-alert type="error" [dismissible]="true">{{ companyError() }}</app-ui-alert>
+  }
+  @if (offersError()) {
+    <app-ui-alert type="error" [dismissible]="true">{{ offersError() }}</app-ui-alert>
+  }
+
+  <div class="stats-grid">
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="building" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Company Status</span>
+          @if (companyLoading()) {
+            <app-skeleton width="80px" height="1rem" />
+          } @else if (company(); as c) {
+            <app-ui-badge [variant]="getStatusVariant(c.status)" size="sm" [pill]="true">
+              {{ statusLabels[c.status] }}
+            </app-ui-badge>
+          } @else {
+            <span class="stat-value">Not registered</span>
+          }
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/dashboard/company-profile">
+          View
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="briefcase" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Job Offers</span>
+          @if (offersLoading()) {
+            <app-skeleton width="60px" height="1rem" />
+          } @else {
+            <span class="stat-value">{{ offersTotal() }}</span>
+          }
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/dashboard/offers">
+          Manage
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="document" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Messages</span>
+          <span class="stat-value">0</span>
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/dashboard/messages">
+          Inbox
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+  </div>
+
+  @if (companyNotFound()) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="building" size="lg" /></div>
+        <h3>Complete your company profile</h3>
+        <p>Create your company profile to start posting offers.</p>
+        <app-ui-button variant="primary" routerLink="/dashboard/company-register">Register company</app-ui-button>
+      </div>
+    </app-ui-card>
+  }
+
+  <div class="content-grid">
+    <app-ui-card>
+      <div class="section-header">
+        <h2><app-icon name="briefcase" size="sm" /> Recent Offers</h2>
+        <app-ui-button variant="outline" size="sm" routerLink="/dashboard/offers">See all</app-ui-button>
+      </div>
+
+      @if (offersLoading()) {
+        <div class="mini-list">
+          @for (i of [1,2,3]; track i) {
+            <div class="mini-item">
+              <app-skeleton width="60%" height="1rem" />
+              <app-skeleton width="40%" height="0.875rem" />
+            </div>
+          }
+        </div>
+      }
+      @else if (recentOffers().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon"><app-icon name="briefcase" size="lg" /></div>
+          <h3>No offers yet</h3>
+          <p>Create your first job offer to reach candidates.</p>
+          <app-ui-button variant="outline" routerLink="/dashboard/offers">Create offer</app-ui-button>
+        </div>
+      }
+      @else {
+        <div class="mini-list">
+          @for (offer of recentOffers(); track offer.id) {
+            <div class="mini-item">
+              <div>
+                <h3>{{ getOfferTitle(offer) }}</h3>
+                <p class="meta">Created {{ offer.createdAt | date:'mediumDate' }}</p>
+              </div>
+              <app-ui-badge variant="info" size="sm" [pill]="true">
+                {{ offer.status }}
+              </app-ui-badge>
+            </div>
+          }
+        </div>
+      }
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="section-header">
+        <h2><app-icon name="document" size="sm" /> Next Steps</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <app-icon name="building" size="sm" />
+          <div>
+            <h3>Complete company profile</h3>
+            <p>Add your logo, sector, and company description.</p>
+          </div>
+        </div>
+        <div class="step">
+          <app-icon name="briefcase" size="sm" />
+          <div>
+            <h3>Publish offers</h3>
+            <p>Make your roles visible and start receiving applications.</p>
+          </div>
+        </div>
+        <div class="step">
+          <app-icon name="document" size="sm" />
+          <div>
+            <h3>Track applications</h3>
+            <p>Review applications and update candidate statuses.</p>
+          </div>
+        </div>
+      </div>
+    </app-ui-card>
+  </div>
+</div>
+

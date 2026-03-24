@@ -1,0 +1,93 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="building" size="lg" /> Company Management</h1>
+      <p>{{ totalElements() }} company{{ totalElements() !== 1 ? 'ies' : '' }}</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  }
+
+  <app-ui-card padding="none" class="table-card">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Sector/City</th>
+            <th class="align-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (company of companies(); track company.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar">
+                    @if (company.logoUrl) {
+                      <img [src]="company.logoUrl" alt="" />
+                    } @else {
+                      <span>{{ company.companyName.substring(0,2).toUpperCase() }}</span>
+                    }
+                  </div>
+                  <div>
+                    <div class="user-name">{{ company.companyName }}</div>
+                    <div class="user-id">ID: {{ company.id }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <app-ui-badge [variant]="company.status === 'PENDING' ? 'warning' : (company.status === 'APPROVED' ? 'success' : 'error')" size="sm" [pill]="true">
+                  {{ company.status }}
+                </app-ui-badge>
+              </td>
+              <td>
+                <div>{{ company.sector }}</div>
+                <div class="muted">{{ company.address?.city }}</div>
+              </td>
+              <td class="align-right">
+                <div class="actions">
+                  @if (company.status === 'PENDING') {
+                    <app-ui-button size="sm" variant="outline" (clicked)="validateCompany(company.id, 'APPROVED')">Approve</app-ui-button>
+                    <app-ui-button size="sm" variant="outline" (clicked)="validateCompany(company.id, 'REJECTED')">Reject</app-ui-button>
+                  }
+                  <app-ui-button variant="ghost" size="sm" (clicked)="deleteCompany(company.id)">
+                    <app-icon name="trash" size="sm"></app-icon>
+                  </app-ui-button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (companies().length === 0 && !loading()) {
+            <tr>
+              <td colspan="4" class="empty-row">
+                <div class="empty-state">
+                  <app-icon name="building" size="lg" />
+                  <p>No companies found.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-ui-card>
+
+  @if (totalElements() > size()) {
+    <div class="pagination">
+      <app-ui-button variant="outline" size="sm" (clicked)="prevPage()" [disabled]="page() === 0">Previous</app-ui-button>
+      <span class="page-info">Page {{ page() + 1 }}</span>
+      <app-ui-button variant="outline" size="sm" (clicked)="nextPage()" [disabled]="(page() + 1) * size() >= totalElements()">Next</app-ui-button>
+    </div>
+  }
+</div>
+
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmOperation()"
+  (cancelled)="cancelConfirm()" />
+

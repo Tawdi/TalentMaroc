@@ -1,0 +1,83 @@
+<div class="saved-jobs-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="document" size="lg" /> Saved Jobs</h1>
+      <p>{{ savedJobs().length }} saved job{{ savedJobs().length !== 1 ? 's' : '' }}</p>
+    </div>
+    <app-ui-button variant="primary" routerLink="/jobs">
+      <app-icon name="briefcase" size="sm" /> Browse Jobs
+    </app-ui-button>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  }
+
+  @if (loading()) {
+    <div class="saved-list">
+      @for (i of [1,2,3]; track i) {
+        <app-ui-card>
+          <app-skeleton type="rectangle" height="100px" />
+        </app-ui-card>
+      }
+    </div>
+  }
+  @else if (savedJobs().length === 0) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="document" size="xl" /></div>
+        <h2>No saved jobs</h2>
+        <p>Save jobs you like to review them later.</p>
+        <app-ui-button variant="outline" routerLink="/jobs">Explore jobs</app-ui-button>
+      </div>
+    </app-ui-card>
+  }
+  @else {
+    <div class="saved-list">
+      @for (job of savedJobs(); track job.id) {
+        <app-ui-card [hoverable]="true">
+          <div class="saved-card">
+            <div class="saved-header">
+              <div>
+                <h3>{{ job.title || ('Offer #' + job.offerId) }}</h3>
+                @if (job.companyName) {
+                  <p class="company-name">{{ job.companyName }}</p>
+                }
+              </div>
+              @if (job.contractType) {
+                <app-ui-badge variant="info" size="sm" [pill]="true">
+                  {{ contractLabels[job.contractType] || job.contractType }}
+                </app-ui-badge>
+              }
+            </div>
+
+            <div class="saved-meta">
+              @if (job.location) {
+                <span class="meta-item"><app-icon name="map-pin" size="sm" /> {{ job.location }}</span>
+              }
+              @if (job.savedAt) {
+                <span class="meta-item"><app-icon name="calendar" size="sm" /> Saved {{ job.savedAt | date:'mediumDate' }}</span>
+              }
+            </div>
+
+            <div class="saved-actions">
+              <app-ui-button variant="outline" size="sm" [routerLink]="['/jobs', job.offerId]">
+                <app-icon name="briefcase" size="sm" /> View Job
+              </app-ui-button>
+              <app-ui-button variant="danger" size="sm" (clicked)="requestRemove(job)">
+                <app-icon name="trash" size="sm" /> Remove
+              </app-ui-button>
+            </div>
+          </div>
+        </app-ui-card>
+      }
+    </div>
+  }
+
+  <app-ui-confirm-dialog
+    [isOpen]="showConfirmDialog()"
+    [data]="confirmDialogData()"
+    (confirmed)="confirmRemove()"
+    (cancelled)="cancelRemove()" />
+</div>
+

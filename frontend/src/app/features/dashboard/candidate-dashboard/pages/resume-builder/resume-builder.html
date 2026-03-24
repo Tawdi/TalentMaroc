@@ -1,0 +1,113 @@
+<div class="resume-builder-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="document" size="lg" /> Resume Builder</h1>
+      <p>Manage your resume details and export a professional CV.</p>
+    </div>
+    <app-ui-button variant="primary" routerLink="/dashboard/profile">
+      <app-icon name="pencil" size="sm" /> Edit Profile
+    </app-ui-button>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="error.set(null)">{{ error() }}</app-ui-alert>
+  }
+  @if (downloadError()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="downloadError.set(null)">{{ downloadError() }}</app-ui-alert>
+  }
+
+  @if (loading()) {
+    <div class="loading-grid">
+      <app-ui-card><app-skeleton type="rectangle" height="120px" /></app-ui-card>
+      <app-ui-card><app-skeleton type="rectangle" height="120px" /></app-ui-card>
+    </div>
+  }
+
+  @else if (profileNotFound()) {
+    <app-ui-card>
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="user" size="lg" /></div>
+        <h2>Create your profile first</h2>
+        <p>Resume Builder uses your profile data. Start by creating your candidate profile.</p>
+        <app-ui-button variant="primary" routerLink="/dashboard/profile">Create profile</app-ui-button>
+      </div>
+    </app-ui-card>
+  }
+
+  @else if (profile(); as p) {
+    <div class="content-grid">
+      <app-ui-card>
+        <div class="section-header">
+          <h2>Resume Overview</h2>
+          @if (p.updatedAt) {
+            <span class="meta">Last updated {{ p.updatedAt | date:'mediumDate' }}</span>
+          }
+        </div>
+        <div class="overview">
+          <div class="overview-item">
+            <span class="label">Name</span>
+            <span class="value">{{ p.firstName }} {{ p.lastName }}</span>
+          </div>
+          @if (p.headline) {
+            <div class="overview-item">
+              <span class="label">Headline</span>
+              <span class="value">{{ p.headline }}</span>
+            </div>
+          }
+          @if (p.address?.city || p.address?.country) {
+            <div class="overview-item">
+              <span class="label">Location</span>
+              <span class="value">{{ p.address?.city }}@if (p.address?.country) {, {{ p.address?.country }} }</span>
+            </div>
+          }
+        </div>
+      </app-ui-card>
+
+      <app-ui-card>
+        <div class="section-header">
+          <h2>Export your CV</h2>
+        </div>
+        <p class="hint">Download the CV you uploaded, or update it from your profile.</p>
+        <div class="actions">
+          <app-ui-button variant="outline" (clicked)="downloadCv()" [disabled]="!p.cvOriginalName">
+            <app-icon name="arrow-down-tray" size="sm" /> Download CV
+          </app-ui-button>
+          <app-ui-button variant="ghost" routerLink="/dashboard/profile">Update CV</app-ui-button>
+        </div>
+        @if (!p.cvOriginalName) {
+          <p class="meta">No CV uploaded yet.</p>
+        }
+      </app-ui-card>
+    </div>
+
+    <app-ui-card>
+      <div class="section-header">
+        <h2>Next steps</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step">
+          <app-icon name="user" size="sm" />
+          <div>
+            <h3>Complete profile details</h3>
+            <p>Add skills, experience, and education to strengthen your resume.</p>
+          </div>
+        </div>
+        <div class="step">
+          <app-icon name="arrow-up-tray" size="sm" />
+          <div>
+            <h3>Upload a fresh CV</h3>
+            <p>Keep your CV up to date so employers see your latest work.</p>
+          </div>
+        </div>
+        <div class="step">
+          <app-icon name="briefcase" size="sm" />
+          <div>
+            <h3>Apply faster</h3>
+            <p>Use your saved CV to apply to more jobs in less time.</p>
+          </div>
+        </div>
+      </div>
+    </app-ui-card>
+  }
+</div>
+

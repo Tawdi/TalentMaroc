@@ -86,6 +86,11 @@
           </div>
         }
 
+        <p class="auth-message success" *ngIf="registrationSuccess()">
+          Registration successful! Please check your email to verify your account.
+          <a routerLink="/auth/verify-email" class="auth-link">Enter verification token</a>
+        </p>
+
         @if (registrationSuccess()) {
           <div class="success-message">
             <div class="success-icon">

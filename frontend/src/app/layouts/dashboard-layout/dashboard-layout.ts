@@ -55,9 +55,7 @@ export class DashboardLayoutComponent {
           { label: 'Saved Jobs', icon: 'bookmark', route: '/dashboard/saved-jobs', badge: 12 },
           { label: 'My Profile', icon: 'profile', route: '/dashboard/profile' },
           { label: 'Resume Builder', icon: 'resume', route: '/dashboard/resume' },
-          { label: 'Job Alerts', icon: 'bell', route: '/dashboard/alerts' },
           { label: 'Messages', icon: 'message', route: '/dashboard/messages', badge: 5 },
-          { label: 'Settings', icon: 'settings', route: '/dashboard/settings' },
         ];
 
       case 'COMPANY':
@@ -66,19 +64,15 @@ export class DashboardLayoutComponent {
           { label: 'Company Profile', icon: 'building', route: '/dashboard/company-profile' },
           { label: 'My Offers', icon: 'briefcase', route: '/dashboard/offers' },
           { label: 'Messages', icon: 'message', route: '/dashboard/messages' },
-          { label: 'Settings', icon: 'settings', route: '/dashboard/settings' },
         ];
 
       case 'ADMIN':
         return [
-          { label: 'Dashboard', icon: 'dashboard', route: '/admin' },
+          { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
           { label: 'Users', icon: 'users', route: '/admin/users' },
           { label: 'Companies', icon: 'building', route: '/admin/companies' },
           { label: 'Job Listings', icon: 'briefcase', route: '/admin/jobs' },
           { label: 'Applications', icon: 'applications', route: '/admin/applications' },
-          { label: 'Reports', icon: 'chart', route: '/admin/reports' },
-          { label: 'Moderation', icon: 'shield', route: '/admin/moderation', badge: 7 },
-          { label: 'Settings', icon: 'settings', route: '/admin/settings' },
         ];
 
       default:

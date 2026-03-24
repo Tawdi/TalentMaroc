@@ -1,0 +1,47 @@
+<section class="auth-container">
+  <div class="auth-card">
+    <h1 class="auth-title">Resend verification email</h1>
+    <p class="auth-subtitle">
+      Enter the email you used to register, and we'll send you a new verification email.
+    </p>
+
+    <form class="auth-form" (submit)="handleSubmit($event)">
+      <div class="form-group">
+        <label class="form-label" for="email">Email address</label>
+        <input
+          id="email"
+          type="email"
+          class="form-input"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          placeholder="you@example.com"
+        />
+        <p class="form-error" *ngIf="emailError()">{{ emailError() }}</p>
+      </div>
+
+      <div class="auth-actions">
+        <button
+          app-ui-button
+          type="submit"
+          [disabled]="isSubmitting()"
+        >
+          <span *ngIf="!isSubmitting(); else loadingTpl">Send verification email</span>
+        </button>
+      </div>
+    </form>
+
+    <ng-template #loadingTpl>
+      Sending...
+    </ng-template>
+
+    <p class="auth-message success" *ngIf="statusMessage()">{{ statusMessage() }}</p>
+    <p class="auth-message error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+    <div class="auth-footer">
+      <button app-ui-button variant="ghost" type="button" (click)="navigateToLogin()">
+        Back to login
+      </button>
+    </div>
+  </div>
+</section>
+

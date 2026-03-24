@@ -1,0 +1,9 @@
+@if (role() === 'COMPANY') {
+  <app-company-dashboard />
+} @else if (role() === 'ADMIN') {
+  <app-admin-dashboard />
+}
+@else {
+  <app-candidate-dashboard />
+}
+

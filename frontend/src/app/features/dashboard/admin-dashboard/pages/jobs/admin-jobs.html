@@ -1,0 +1,22 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="briefcase" size="lg" /> Job Listings</h1>
+      <p>Review and moderate job listings across the platform.</p>
+    </div>
+  </div>
+
+  <app-ui-card>
+    <div class="empty-state">
+      <div class="empty-icon"><app-icon name="briefcase" size="xl" /></div>
+      <h2>No listings to review</h2>
+      <p>When companies publish new jobs, they will appear here.</p>
+      <div class="actions">
+        <app-ui-button variant="primary" routerLink="/admin/companies">
+          <app-icon name="building" size="sm" /> Review Companies
+        </app-ui-button>
+      </div>
+    </div>
+  </app-ui-card>
+</div>
+

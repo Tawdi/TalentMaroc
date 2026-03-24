@@ -1,0 +1,22 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="document" size="lg" /> Applications</h1>
+      <p>Track and moderate applications submitted by candidates.</p>
+    </div>
+  </div>
+
+  <app-ui-card>
+    <div class="empty-state">
+      <div class="empty-icon"><app-icon name="document" size="xl" /></div>
+      <h2>No applications to review</h2>
+      <p>Applications will appear here for auditing and compliance checks.</p>
+      <div class="actions">
+        <app-ui-button variant="primary" routerLink="/admin/users">
+          <app-icon name="user" size="sm" /> Browse Users
+        </app-ui-button>
+      </div>
+    </div>
+  </app-ui-card>
+</div>
+

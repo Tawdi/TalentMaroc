@@ -1,0 +1,93 @@
+databaseChangeLog:
+
+  # ─── 1. applications table ──────────────────────────────────────────
+  - changeSet:
+      id: 20260313-001
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: applications
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: candidate_user_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: offer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cv_url
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cover_letter
+                  type: TEXT
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: RECEIVED
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_note
+                  type: TEXT
+              # auditing
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+  # ─── 2. Unique constraint: one application per candidate per offer ──
+  - changeSet:
+      id: 20260313-002
+      author: tawdi
+      changes:
+        - addUniqueConstraint:
+            tableName: applications
+            columnNames: candidate_user_id, offer_id
+            constraintName: uk_candidate_offer
+
+  # ─── 3. Indexes for common queries ─────────────────────────────────
+  - changeSet:
+      id: 20260313-003
+      author: tawdi
+      changes:
+        - createIndex:
+            indexName: idx_application_candidate
+            tableName: applications
+            columns:
+              - column:
+                  name: candidate_user_id
+        - createIndex:
+            indexName: idx_application_offer
+            tableName: applications
+            columns:
+              - column:
+                  name: offer_id
+        - createIndex:
+            indexName: idx_application_status
+            tableName: applications
+            columns:
+              - column:
+                  name: status
+        - createIndex:
+            indexName: idx_application_created_at
+            tableName: applications
+            columns:
+              - column:
+                  name: created_at
+                  descending: true

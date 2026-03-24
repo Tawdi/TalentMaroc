@@ -1,0 +1,100 @@
+<div class="auth-page">
+  <div class="auth-container animate-fade-in">
+    <!-- Left Side - Branding -->
+    <div class="auth-branding">
+      <div class="branding-content">
+        <a routerLink="/" class="logo">
+          <span class="logo-talent">Talent</span><span class="logo-maroc">Maroc</span>
+        </a>
+        <h1>Verify your email</h1>
+        <p>Confirm your email address to activate your account and start using the platform.</p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>Stay secure</h3>
+              <p>We verify your email to protect your account</p>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+              </svg>
+            </div>
+            <div class="feature-text">
+              <h3>Full access</h3>
+              <p>Unlock all candidate and company features</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Verify Email Form -->
+    <div class="auth-form-section">
+      <div class="auth-form-container">
+        <div class="form-header">
+          <h2>Confirm your email</h2>
+          <p>We sent you an email with a verification link. If it didn't open automatically, paste your token below.</p>
+        </div>
+
+        <form class="auth-form" (submit)="handleSubmit($event)">
+          <div class="form-group">
+            <label class="form-label" for="token">Verification token</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l7 4v6c0 5-3.5 9.74-7 10-3.5-.26-7-5-7-10V6z"/>
+                <circle cx="12" cy="10" r="2"/>
+              </svg>
+              <input
+                id="token"
+                type="text"
+                class="form-input"
+                [value]="token()"
+                (input)="token.set($any($event.target).value)"
+                placeholder="Paste your verification token"
+              />
+            </div>
+          </div>
+
+          <app-ui-button
+            type="submit"
+            variant="primary"
+            [fullWidth]="true"
+            [loading]="isVerifying()">
+            @if (isVerifying()) {
+              Verifying...
+            } @else {
+              Verify email
+            }
+          </app-ui-button>
+        </form>
+
+        @if (statusMessage()) {
+          <div class="alert alert-success">
+            <span>{{ statusMessage() }}</span>
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="alert alert-error">
+            <span>{{ errorMessage() }}</span>
+          </div>
+        }
+
+        <div class="auth-footer">
+          <a routerLink="/auth/login" class="auth-link">Back to login</a>
+          <a routerLink="/auth/resend-verification" class="auth-link">Resend verification email</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

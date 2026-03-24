@@ -1,0 +1,105 @@
+<div class="admin-dashboard">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="user" size="lg" /> Admin Dashboard</h1>
+      <p>Monitor user activity and keep the platform healthy.</p>
+    </div>
+    <div class="header-actions">
+      <app-ui-button variant="primary" routerLink="/admin/companies">
+        <app-icon name="building" size="sm" /> Review Companies
+      </app-ui-button>
+      <app-ui-button variant="outline" routerLink="/admin/users">
+        <app-icon name="user" size="sm" /> Manage Users
+      </app-ui-button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true">{{ error() }}</app-ui-alert>
+  }
+
+  <div class="stats-grid">
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="user" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Total Users</span>
+          @if (loading()) {
+            <app-skeleton width="80px" height="1rem" />
+          } @else {
+            <span class="stat-value">{{ totalUsers() | number }}</span>
+          }
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/admin/users">View</app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="building" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Total Companies</span>
+          @if (loading()) {
+            <app-skeleton width="80px" height="1rem" />
+          } @else {
+            <span class="stat-value">{{ totalCompanies() | number }}</span>
+          }
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/admin/companies">View</app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="clock" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Pending Companies</span>
+          @if (loading()) {
+            <app-skeleton width="60px" height="1rem" />
+          } @else {
+            <span class="stat-value">{{ pendingCompanies() | number }}</span>
+          }
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/admin/companies">Review</app-ui-button>
+      </div>
+    </app-ui-card>
+  </div>
+
+  <div class="content-grid">
+    <app-ui-card>
+      <div class="section-header">
+        <h2><app-icon name="building" size="sm" /> Quick Actions</h2>
+      </div>
+      <div class="actions-grid">
+        <app-ui-button variant="outline" routerLink="/admin/companies">
+          Review Company Requests
+        </app-ui-button>
+        <app-ui-button variant="outline" routerLink="/admin/users">
+          Browse Users
+        </app-ui-button>
+        <app-ui-button variant="outline" routerLink="/admin/jobs">
+          View Job Listings
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="section-header">
+        <h2><app-icon name="document" size="sm" /> Platform Overview</h2>
+      </div>
+      <div class="overview-list">
+        <div class="overview-item">
+          <span>Monitor new company registrations and approvals.</span>
+        </div>
+        <div class="overview-item">
+          <span>Review users and handle abuse reports quickly.</span>
+        </div>
+        <div class="overview-item">
+          <span>Audit job listings and applications for compliance.</span>
+        </div>
+      </div>
+    </app-ui-card>
+  </div>
+<app-admin-pending-companies/>
+</div>
+
