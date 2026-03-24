@@ -1,0 +1,180 @@
+<div class="candidate-dashboard">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="sparkles" size="lg" /> Dashboard</h1>
+      <p>Welcome back, {{ userName() }}. Keep your profile updated and track your progress.</p>
+    </div>
+    <div class="header-actions">
+      <app-ui-button variant="primary" routerLink="/jobs">
+        <app-icon name="briefcase" size="sm" /> Browse Jobs
+      </app-ui-button>
+      <app-ui-button variant="outline" routerLink="/dashboard/profile">
+        <app-icon name="user" size="sm" /> Update Profile
+      </app-ui-button>
+    </div>
+  </div>
+
+  @if (applicationsError()) {
+    <app-ui-alert type="error" [dismissible]="true">{{ applicationsError() }}</app-ui-alert>
+  }
+  @if (offersError()) {
+    <app-ui-alert type="error" [dismissible]="true">{{ offersError() }}</app-ui-alert>
+  }
+  @if (profileError()) {
+    <app-ui-alert type="error" [dismissible]="true">{{ profileError() }}</app-ui-alert>
+  }
+
+  <div class="stats-grid">
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="document" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Applications</span>
+          <span class="stat-value">{{ applicationsTotal() }}</span>
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/dashboard/applications">
+          View
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="stat-card">
+        <div class="stat-icon"><app-icon name="briefcase" size="md" /></div>
+        <div class="stat-info">
+          <span class="stat-label">Saved Jobs</span>
+          <span class="stat-value">{{ savedJobsCount() }}</span>
+        </div>
+        <app-ui-button variant="ghost" size="sm" routerLink="/dashboard/saved-jobs">
+          Manage
+        </app-ui-button>
+      </div>
+    </app-ui-card>
+
+
+  </div>
+
+  <div class="content-grid">
+    <app-ui-card>
+      <div class="section-header">
+        <h2><app-icon name="document" size="sm" /> Recent Applications</h2>
+        <app-ui-button variant="outline" size="sm" routerLink="/dashboard/applications">See all</app-ui-button>
+      </div>
+
+      @if (applicationsLoading()) {
+        <div class="mini-list">
+          @for (i of [1,2,3]; track i) {
+            <div class="mini-item">
+              <app-skeleton width="60%" height="1rem" />
+              <app-skeleton width="40%" height="0.875rem" />
+            </div>
+          }
+        </div>
+      }
+      @else if (recentApplications().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon"><app-icon name="document" size="lg" /></div>
+          <h3>No applications yet</h3>
+          <p>Start exploring jobs and submit your first application.</p>
+          <app-ui-button variant="outline" routerLink="/jobs">Browse jobs</app-ui-button>
+        </div>
+      }
+      @else {
+        <div class="mini-list">
+          @for (app of recentApplications(); track app.id) {
+            <div class="mini-item">
+              <div>
+                <h3>{{ app.offer?.title || ('Job Offer #' + app.offerId) }}</h3>
+                <p class="meta">Applied {{ app.createdAt | date:'mediumDate' }}</p>
+              </div>
+              <app-ui-badge [variant]="getStatusVariant(app.status)" [pill]="true" size="sm">
+                {{ statusLabels[app.status] }}
+              </app-ui-badge>
+            </div>
+          }
+        </div>
+      }
+    </app-ui-card>
+
+    <app-ui-card>
+      <div class="section-header">
+        <h2><app-icon name="user" size="sm" /> Profile Progress</h2>
+        <app-ui-button variant="outline" size="sm" routerLink="/dashboard/profile">Edit profile</app-ui-button>
+      </div>
+
+      @if (profileLoading()) {
+        <div class="profile-skeleton">
+          <app-skeleton type="rectangle" height="120px" />
+        </div>
+      }
+      @else if (profileNotFound()) {
+        <div class="empty-state">
+          <div class="empty-icon"><app-icon name="user" size="lg" /></div>
+          <h3>Create your profile</h3>
+          <p>Complete your profile to improve your chances with employers.</p>
+          <app-ui-button variant="primary" routerLink="/dashboard/profile">Create profile</app-ui-button>
+        </div>
+      }
+      @else if (profile(); as p) {
+        <div class="profile-progress">
+          <div class="progress-ring">
+            <svg viewBox="0 0 36 36">
+              <path class="ring-bg"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="ring-fill"
+                [attr.stroke-dasharray]="completionPercentage() + ', 100'"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+            <span class="progress-text">{{ completionPercentage() }}%</span>
+          </div>
+          <div class="progress-info">
+            <h3>{{ p.headline || 'Complete your profile' }}</h3>
+            <p>Add skills, experience, and a CV to stand out to employers.</p>
+          </div>
+        </div>
+      }
+    </app-ui-card>
+  </div>
+
+  <app-ui-card>
+    <div class="section-header">
+      <h2><app-icon name="briefcase" size="sm" /> Recommended Jobs</h2>
+      <app-ui-button variant="outline" size="sm" routerLink="/jobs">Browse all</app-ui-button>
+    </div>
+
+    @if (offersLoading()) {
+      <div class="mini-list">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="mini-item">
+            <app-skeleton width="70%" height="1rem" />
+            <app-skeleton width="40%" height="0.875rem" />
+          </div>
+        }
+      </div>
+    }
+    @else if (recommendedOffers().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><app-icon name="briefcase" size="lg" /></div>
+        <h3>No job recommendations yet</h3>
+        <p>Check back soon or browse all jobs to find your next opportunity.</p>
+        <app-ui-button variant="outline" routerLink="/jobs">Browse jobs</app-ui-button>
+      </div>
+    }
+    @else {
+      <div class="mini-list">
+        @for (offer of recommendedOffers(); track offer.id) {
+          <div class="mini-item">
+            <div>
+              <h3>{{ offer.title }}</h3>
+              <p class="meta">{{ offer.company?.companyName || 'Company' }}@if (offer.location) { · {{ offer.location }} }</p>
+            </div>
+            <app-ui-badge variant="info" size="sm" [pill]="true">
+              {{ contractLabels[offer.contractType] || offer.contractType }}
+            </app-ui-badge>
+          </div>
+        }
+      </div>
+    }
+  </app-ui-card>
+</div>
+

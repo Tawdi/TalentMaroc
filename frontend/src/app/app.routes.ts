@@ -13,7 +13,7 @@ import {
   applicationsReducers,
   ApplicationEffects,
 } from './features/applications/store';
-import { adminReducer, AdminEffects } from './features/dashboard/admin-dashboard/store';
+import { adminReducer, ADMIN_FEATURE_KEY, AdminEffects } from './features/dashboard/admin-dashboard/store';
 import {
   LoginComponent,
   RegisterComponent,
@@ -130,10 +130,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/candidate-dashboard/pages/resume-builder/resume-builder').then(m => m.ResumeBuilderComponent),
       },
       {
-        path: 'alerts',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/pages/job-alerts/job-alerts').then(m => m.JobAlertsComponent),
-      },
-      {
         path: 'profile',
         loadComponent: () => import('./features/dashboard/candidate-profile/candidate-profile').then(m => m.CandidateProfileComponent),
       },
@@ -176,7 +172,7 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard],
     providers: [
       ...featureProviders,
-      provideState('admin', adminReducer),
+      provideState(ADMIN_FEATURE_KEY, adminReducer),
       provideEffects(AdminEffects),
     ],
     children: [
