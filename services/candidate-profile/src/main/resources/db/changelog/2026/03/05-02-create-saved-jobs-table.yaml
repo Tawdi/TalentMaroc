@@ -1,0 +1,53 @@
+databaseChangeLog:
+
+  # ─── candidate_saved_jobs ─────────────────────────────────────────
+  - changeSet:
+      id: 20260305-010
+      author: tawdi
+      changes:
+        - createTable:
+            tableName: candidate_saved_jobs
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: offer_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: saved_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+
+  - changeSet:
+      id: 20260305-011
+      author: tawdi
+      changes:
+        - addUniqueConstraint:
+            tableName: candidate_saved_jobs
+            columnNames: user_id, offer_id
+            constraintName: uk_candidate_saved_job_user_offer
+        - createIndex:
+            indexName: idx_candidate_saved_jobs_user
+            tableName: candidate_saved_jobs
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_candidate_saved_jobs_offer
+            tableName: candidate_saved_jobs
+            columns:
+              - column:
+                  name: offer_id
+

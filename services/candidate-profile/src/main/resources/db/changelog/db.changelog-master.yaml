@@ -2,4 +2,5 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/2026/03/05-01-create-candidate-tables.yaml
-
+  - include:
+      file: db/changelog/2026/03/05-02-create-saved-jobs-table.yaml
