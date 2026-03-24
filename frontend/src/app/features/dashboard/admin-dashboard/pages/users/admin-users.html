@@ -1,0 +1,77 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1><app-icon name="user" size="lg" /> User Management</h1>
+      <p>{{ totalElements() }} user{{ totalElements() !== 1 ? 's' : '' }}</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <app-ui-alert type="error" [dismissible]="true" (dismissed)="clearError()">{{ error() }}</app-ui-alert>
+  }
+
+  <app-ui-card padding="none" class="table-card">
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Role</th>
+            <th>Email</th>
+            <th class="align-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar">{{ user.username.substring(0,2).toUpperCase() }}</div>
+                  <div>
+                    <div class="user-name">{{ user.name || user.username }}</div>
+                    <div class="user-id">ID: {{ user.id.substring(0,8) }}...</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <app-ui-badge [variant]="user.role === 'COMPANY' ? 'success' : (user.role === 'ADMIN' ? 'primary' : 'info')" size="sm" [pill]="true">
+                  {{ user.role }}
+                </app-ui-badge>
+              </td>
+              <td>{{ user.email }}</td>
+              <td class="align-right">
+                <app-ui-button variant="ghost" size="sm" (clicked)="deleteUser(user.id)">
+                  <app-icon name="trash" size="sm" />
+                </app-ui-button>
+              </td>
+            </tr>
+          }
+          @if (users().length === 0 && !loading()) {
+            <tr>
+              <td colspan="4" class="empty-row">
+                <div class="empty-state">
+                  <app-icon name="user" size="lg" />
+                  <p>No users found.</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </app-ui-card>
+
+  @if (totalElements() > size()) {
+    <div class="pagination">
+      <app-ui-button variant="outline" size="sm" (clicked)="prevPage()" [disabled]="page() === 0">Previous</app-ui-button>
+      <span class="page-info">Page {{ page() + 1 }}</span>
+      <app-ui-button variant="outline" size="sm" (clicked)="nextPage()" [disabled]="(page() + 1) * size() >= totalElements()">Next</app-ui-button>
+    </div>
+  }
+</div>
+
+<app-ui-confirm-dialog
+  [isOpen]="showConfirmDialog()"
+  [data]="confirmDialogData()"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelConfirm()" />
