@@ -67,6 +67,12 @@ public class CompanyService {
                 .map(mapper::toCompanySummary);
     }
 
+    @Transactional(readOnly = true)
+    public Page<CompanySummaryResponse> getAllCompanies(Pageable pageable) {
+        return companyRepository.findAll(pageable)
+                .map(mapper::toCompanySummary);
+    }
+
     // ======================== UPDATE ========================
 
     public CompanyResponse updateCompany(String userId, UpdateCompanyRequest request) {
@@ -90,6 +96,14 @@ public class CompanyService {
 
         companyRepository.delete(company);
         log.info("Company deleted: {} (userId: {})", company.getCompanyName(), userId);
+    }
+
+    public void deleteCompanyById(Long companyId) {
+        if (!companyRepository.existsById(companyId)) {
+            throw new ResourceNotFoundException("Company not found with id: " + companyId);
+        }
+        companyRepository.deleteById(companyId);
+        log.info("Company deleted with id: {}", companyId);
     }
 
     // ======================== ADMIN: VALIDATION ========================
@@ -135,4 +149,3 @@ public class CompanyService {
                         "Company not found for user: " + userId));
     }
 }
-
