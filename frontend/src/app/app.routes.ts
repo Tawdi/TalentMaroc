@@ -13,6 +13,15 @@ import {
   applicationsReducers,
   ApplicationEffects,
 } from './features/applications/store';
+import { adminReducer, AdminEffects } from './features/dashboard/admin-dashboard/store';
+import {
+  LoginComponent,
+  RegisterComponent,
+  VerifyEmailComponent,
+  ResendVerificationComponent,
+  ForgotPasswordComponent,
+  ResetPasswordComponent,
+} from './features/auth';
 
 const featureProviders = [
   provideState(COMPANY_OFFERS_FEATURE_KEY, companyOffersReducers),
@@ -67,19 +76,27 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent),
+        loadComponent: () => Promise.resolve(LoginComponent),
       },
       {
         path: 'register',
-        loadComponent: () => import('./features/auth/register/register').then(m => m.RegisterComponent),
+        loadComponent: () => Promise.resolve(RegisterComponent),
       },
       {
         path: 'forgot-password',
-        loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent), // Placeholder
+        loadComponent: () => Promise.resolve(ForgotPasswordComponent),
       },
       {
         path: 'verify-email',
-        loadComponent: () => import('./features/auth/login/login').then(m => m.LoginComponent), // Placeholder
+        loadComponent: () => Promise.resolve(VerifyEmailComponent),
+      },
+      {
+        path: 'resend-verification',
+        loadComponent: () => Promise.resolve(ResendVerificationComponent),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () => Promise.resolve(ResetPasswordComponent),
       },
       {
         path: '',
@@ -98,7 +115,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent),
+        loadComponent: () => import('./features/dashboard/dashboard-home/dashboard-home').then(m => m.DashboardHomeComponent),
       },
       {
         path: 'applications',
@@ -106,7 +123,15 @@ export const routes: Routes = [
       },
       {
         path: 'saved-jobs',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
+        loadComponent: () => import('./features/dashboard/candidate-dashboard/pages/saved-jobs/saved-jobs').then(m => m.SavedJobsComponent),
+      },
+      {
+        path: 'resume',
+        loadComponent: () => import('./features/dashboard/candidate-dashboard/pages/resume-builder/resume-builder').then(m => m.ResumeBuilderComponent),
+      },
+      {
+        path: 'alerts',
+        loadComponent: () => import('./features/dashboard/candidate-dashboard/pages/job-alerts/job-alerts').then(m => m.JobAlertsComponent),
       },
       {
         path: 'profile',
@@ -139,7 +164,7 @@ export const routes: Routes = [
       },
       {
         path: 'messages',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
+        loadComponent: () => import('./features/dashboard/dashboard-messages/dashboard-messages').then(m => m.DashboardMessagesComponent),
       },
     ],
   },
@@ -149,15 +174,31 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./layouts/dashboard-layout/dashboard-layout').then(m => m.DashboardLayoutComponent),
     canActivate: [authGuard, adminGuard],
-    providers: [...featureProviders],
+    providers: [
+      ...featureProviders,
+      provideState('admin', adminReducer),
+      provideEffects(AdminEffects),
+    ],
     children: [
       {
         path: '',
-        loadComponent: () => import('./features/dashboard/candidate-dashboard/candidate-dashboard').then(m => m.CandidateDashboardComponent), // Placeholder
+        loadComponent: () => import('./features/dashboard/admin-dashboard/admin-dashboard').then(m => m.AdminDashboardComponent),
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./features/dashboard/admin-dashboard/pages/users/admin-users').then(m => m.AdminUsersComponent),
       },
       {
         path: 'companies',
-        loadComponent: () => import('./features/company-offers/pages/admin-pending-companies/admin-pending-companies').then(m => m.AdminPendingCompaniesComponent),
+        loadComponent: () => import('./features/dashboard/admin-dashboard/pages/companies/admin-companies').then(m => m.AdminCompaniesComponent),
+      },
+      {
+        path: 'jobs',
+        loadComponent: () => import('./features/dashboard/admin-dashboard/pages/jobs/admin-jobs').then(m => m.AdminJobsComponent),
+      },
+      {
+        path: 'applications',
+        loadComponent: () => import('./features/dashboard/admin-dashboard/pages/applications/admin-applications').then(m => m.AdminApplicationsComponent),
       },
     ],
   },

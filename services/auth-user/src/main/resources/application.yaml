@@ -30,11 +30,17 @@ spring:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
     enabled: true
 
-  kafka:
-    bootstrap-servers: ${KAFKA_HOST:localhost}:29092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASS:guest}
+
+#  kafka:
+#    bootstrap-servers: ${KAFKA_HOST:localhost}:29092
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   security:
     oauth2:
@@ -93,6 +99,7 @@ spring:
 
 
 job-board:
+  frontend-base-url: http://localhost:4200
   jwt:
     secret-key: "${JWT_SECRET:aazerty1234567}"
     expiration-ms: ${JWT_EXPIRATION_MS:3600000} # 1 hour default
@@ -120,3 +127,4 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
+

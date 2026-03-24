@@ -35,17 +35,12 @@ spring:
             enable: true
     default-encoding: UTF-8
 
-  kafka:
-    bootstrap-servers: ${KAFKA_HOST:localhost}:29092
-    consumer:
-      group-id: notifications-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "*"
-        spring.json.use.type.headers: false
-        spring.json.value.default.type: io.github.tawdi.jobboard.notifications.dto.SendNotificationRequest
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASS:guest}
+
 
 server:
   port: 8093

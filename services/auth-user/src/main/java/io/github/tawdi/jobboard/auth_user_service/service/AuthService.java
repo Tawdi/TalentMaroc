@@ -100,9 +100,14 @@ public class AuthService {
 
         VerificationToken verificationToken = verificationTokenService.createEmailVerificationToken(savedUser);
         
-        // Publish async Kafka event instead of blocking to send an email
+        // Publish async  event instead of blocking to send an email
         notificationProducerService.sendWelcomeEmail(savedUser.getId(), savedUser.getEmail(), savedUser.getRole().getName());
 
+        notificationProducerService.sendVerificationEmail(
+                savedUser.getId(),
+                savedUser.getEmail(),
+                verificationToken.getToken()
+        );
         log.info("User registered successfully: {}", savedUser.getEmail());
 
         return UserResponse.builder()
