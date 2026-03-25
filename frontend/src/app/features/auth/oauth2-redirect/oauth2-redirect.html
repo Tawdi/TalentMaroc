@@ -1,0 +1,21 @@
+<div class="oauth-redirect-page">
+  <div class="oauth-card">
+    @if (isProcessing()) {
+      <div class="spinner"></div>
+      <h2>Signing you in...</h2>
+      <p>Please wait while we secure your account.</p>
+    } @else if (errorMessage(); as error) {
+      <div class="error-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="13" />
+          <line x1="12" y1="16" x2="12" y2="16" />
+        </svg>
+      </div>
+      <h2>We couldn't finish signing you in</h2>
+      <p>{{ error }}</p>
+      <app-ui-button variant="primary" (clicked)="retry()">Back to Login</app-ui-button>
+    }
+  </div>
+</div>
+

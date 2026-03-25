@@ -13,8 +13,12 @@ export const ApplicationActions = createActionGroup({
     // ======================== CANDIDATE ========================
     // Apply
     'Apply': props<{ userId: string; request: CreateApplicationRequest }>(),
-    'Apply Success': props<{ application: ApplicationResponse }>(),
+    'Apply Success': props<{ application: ApplicationResponse; offerId: number }>(),
     'Apply Failure': props<{ error: string }>(),
+
+    'Check Applied': props<{ userId: string; offerId: number }>(),
+    'Check Applied Success': props<{ offerId: number; hasApplied: boolean }>(),
+    'Check Applied Failure': props<{ error: string }>(),
 
     // My Applications
     'Load My Applications': props<{ userId: string; page?: number; size?: number }>(),

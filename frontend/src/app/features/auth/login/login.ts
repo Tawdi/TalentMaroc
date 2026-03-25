@@ -94,6 +94,9 @@ export class LoginComponent {
       },
     });
   }
+
+  startOAuthLogin(provider: 'google' | 'github'): void {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/dashboard';
+    this.authService.startOAuthLogin(provider, returnUrl);
+  }
 }
-
-

@@ -30,6 +30,8 @@ export interface ApplicationState {
   applySuccess: boolean;
   saving: boolean;
   error: string | null;
+  appliedStatus: Record<number, boolean>;
+  checkingApplied: boolean;
 }
 
 export const initialApplicationState: ApplicationState = {
@@ -49,6 +51,8 @@ export const initialApplicationState: ApplicationState = {
   applySuccess: false,
   saving: false,
   error: null,
+  appliedStatus: {},
+  checkingApplied: false,
 };
 
 export const applicationReducer = createReducer(
@@ -61,12 +65,13 @@ export const applicationReducer = createReducer(
     applySuccess: false,
     error: null,
   })),
-  on(ApplicationActions.applySuccess, (state, { application }) => ({
+  on(ApplicationActions.applySuccess, (state, { application, offerId }) => ({
     ...state,
     myApplications: applicationAdapter.addOne(application, state.myApplications),
     myTotalElements: state.myTotalElements + 1,
     applying: false,
     applySuccess: true,
+    appliedStatus: { ...state.appliedStatus, [offerId]: true },
   })),
   on(ApplicationActions.applyFailure, (state, { error }) => ({
     ...state,
@@ -154,6 +159,23 @@ export const applicationReducer = createReducer(
   on(ApplicationActions.updateApplicationStatusFailure, (state, { error }) => ({
     ...state,
     saving: false,
+    error,
+  })),
+
+  // ======================== CHECK APPLIED ========================
+  on(ApplicationActions.checkApplied, (state) => ({
+    ...state,
+    checkingApplied: true,
+    error: null,
+  })),
+  on(ApplicationActions.checkAppliedSuccess, (state, { offerId, hasApplied }) => ({
+    ...state,
+    checkingApplied: false,
+    appliedStatus: { ...state.appliedStatus, [offerId]: hasApplied },
+  })),
+  on(ApplicationActions.checkAppliedFailure, (state, { error }) => ({
+    ...state,
+    checkingApplied: false,
     error,
   })),
 

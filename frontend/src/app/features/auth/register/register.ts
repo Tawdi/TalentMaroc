@@ -210,5 +210,8 @@ export class RegisterComponent {
       },
     });
   }
-}
 
+  startOAuthLogin(provider: 'google' | 'github'): void {
+    this.authService.startOAuthLogin(provider, '/dashboard');
+  }
+}

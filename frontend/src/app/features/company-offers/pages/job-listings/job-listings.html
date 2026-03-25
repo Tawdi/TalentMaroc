@@ -28,19 +28,22 @@
     </div>
   </div>
 
-  <!-- Employer CTA -->
-  <div class="employer-cta">
-    <div class="cta-content">
-      <h3>Looking to hire top talent?</h3>
-      <p>Post your job openings and connect with qualified candidates</p>
+  @if (!isAuthenticated()) {
+    <!-- Employer CTA -->
+    <div class="employer-cta">
+      <div class="cta-content">
+        <h3>Looking to hire top talent?</h3>
+        <p>Post your job openings and connect with qualified candidates</p>
+      </div>
+      <div class="cta-actions">
+        <a routerLink="/register/company" class="cta-button">
+          <app-icon name="building" size="sm" />
+          Post Jobs - Register Company
+        </a>
+      </div>
     </div>
-    <div class="cta-actions">
-      <a routerLink="/register/company" class="cta-button">
-        <app-icon name="building" size="sm" />
-        Post Jobs - Register Company
-      </a>
-    </div>
-  </div>
+  }
+
 
   @if (error()) {
     <app-ui-alert type="error">{{ error() }}</app-ui-alert>
@@ -88,6 +91,7 @@
             [offer]="offer"
             [isSaved]="isOfferSaved(offer.id)"
             [saving]="isOfferPending(offer.id)"
+            [enableSave]="canSaveJobs()"
             (view)="viewOffer($event)"
             (toggleSave)="toggleSave($event)"
           />

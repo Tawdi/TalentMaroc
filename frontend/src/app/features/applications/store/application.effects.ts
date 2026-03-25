@@ -17,10 +17,26 @@ export class ApplicationEffects {
       ofType(ApplicationActions.apply),
       exhaustMap(({ userId, request }) =>
         this.applicationService.apply(userId, request).pipe(
-          map((application) => ApplicationActions.applySuccess({ application })),
+          map((application) => ApplicationActions.applySuccess({ application, offerId: request.offerId })),
           catchError((err) =>
             of(ApplicationActions.applyFailure({
               error: err?.error?.message || 'Failed to submit application',
+            })),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  checkApplied$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ApplicationActions.checkApplied),
+      exhaustMap(({ userId, offerId }) =>
+        this.applicationService.hasApplied(userId, offerId).pipe(
+          map((hasApplied) => ApplicationActions.checkAppliedSuccess({ offerId, hasApplied })),
+          catchError((err) =>
+            of(ApplicationActions.checkAppliedFailure({
+              error: err?.error?.message || 'Failed to verify application status',
             })),
           ),
         ),

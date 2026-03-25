@@ -18,6 +18,13 @@ import { environment } from '../../../environments/environment';
 
 const AUTH_STORAGE_KEY = 'talent_maroc_auth';
 const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000; // Refresh 5 minutes before expiry
+const OAUTH_RETURN_URL_KEY = 'talent_maroc_oauth_return_url';
+type OAuthProvider = 'google' | 'github';
+interface OAuthCallbackParams {
+  token: string | null;
+  refreshToken: string | null;
+  userId: string | null;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -233,9 +240,83 @@ export class AuthService {
     return user.expiresAt - now < TOKEN_REFRESH_THRESHOLD;
   }
 
+  /**
+   * Start OAuth login process
+   */
+  startOAuthLogin(provider: OAuthProvider, returnUrl?: string): void {
+    const targetReturnUrl = returnUrl ?? this.router.url ?? '/dashboard';
+    try {
+      sessionStorage.setItem(OAUTH_RETURN_URL_KEY, targetReturnUrl);
+    } catch (e) {
+      console.warn('Unable to persist OAuth return URL', e);
+    }
+
+    const oauthUrl = this.buildOAuthAuthorizeUrl(provider);
+    window.location.href = oauthUrl;
+  }
+
+  /**
+   * Complete OAuth login process
+   */
+  completeOAuthLogin(params: OAuthCallbackParams): Observable<void> {
+    const { token, refreshToken, userId } = params;
+    if (!token || !refreshToken || !userId) {
+      return throwError(() => new Error('Missing OAuth credentials. Please try signing in again.'));
+    }
+
+    const headers = { Authorization: `Bearer ${token}` };
+    return this.http
+      .get<ApiResponse<UserResponse>>(`${environment.apiUrl}/auth/api/users/${userId}`, { headers })
+      .pipe(
+        map((res) => res.data!),
+        tap((user) => {
+          const currentUser: CurrentUser = {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            name: user.name,
+            role: user.role as UserRole,
+            accessToken: token,
+            refreshToken,
+            expiresAt: Date.now() + environment.oauthTokenExpirationMs,
+          };
+          this.persistCurrentUser(currentUser);
+        }),
+        map(() => void 0),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   * Consume the stored OAuth return URL, if available
+   */
+  consumeOAuthReturnUrl(defaultUrl: string = '/dashboard'): string {
+    try {
+      const url = sessionStorage.getItem(OAUTH_RETURN_URL_KEY);
+      if (url) {
+        sessionStorage.removeItem(OAUTH_RETURN_URL_KEY);
+        return url;
+      }
+    } catch (e) {
+      console.warn('Unable to read OAuth return URL', e);
+    }
+    return defaultUrl;
+  }
+
   // ============================================
   // PRIVATE METHODS
   // ============================================
+
+  private buildOAuthAuthorizeUrl(provider: OAuthProvider): string {
+    const redirectUri = encodeURIComponent(environment.oauthRedirectUri);
+    return `${environment.apiUrl}/auth/oauth2/authorize/${provider}?redirect_uri=${redirectUri}`;
+  }
+
+  private persistCurrentUser(user: CurrentUser): void {
+    this._currentUser.set(user);
+    this.saveUserToStorage(user);
+    this.startRefreshTokenTimer();
+  }
 
   private setSession(loginResponse: LoginResponse): void {
     const expiresAt = Date.now() + (loginResponse.expiresIn * 1000);
@@ -250,9 +331,7 @@ export class AuthService {
       expiresAt,
     };
 
-    this._currentUser.set(user);
-    this.saveUserToStorage(user);
-    this.startRefreshTokenTimer();
+    this.persistCurrentUser(user);
   }
 
   private updateTokens(tokenResponse: TokenResponse): void {
@@ -268,9 +347,7 @@ export class AuthService {
       expiresAt,
     };
 
-    this._currentUser.set(updatedUser);
-    this.saveUserToStorage(updatedUser);
-    this.startRefreshTokenTimer();
+    this.persistCurrentUser(updatedUser);
   }
 
   private clearSession(): void {

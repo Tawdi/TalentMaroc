@@ -32,6 +32,12 @@ export class ApplicationService {
       .pipe(map((res) => res.data!));
   }
 
+  hasApplied(userId: string, offerId: number): Observable<boolean> {
+    return this.http
+      .get<ApiResponse<boolean>>(`${this.apiUrl}/candidate/${userId}/offers/${offerId}/exists`)
+      .pipe(map((res) => res.data ?? false));
+  }
+
   getApplicationForCandidate(userId: string, applicationId: number): Observable<ApplicationResponse> {
     return this.http
       .get<ApiResponse<ApplicationResponse>>(`${this.apiUrl}/candidate/${userId}/${applicationId}`)

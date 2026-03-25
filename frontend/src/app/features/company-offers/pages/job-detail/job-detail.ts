@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectionStrategy, signal, computed, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { DatePipe } from '@angular/common';
@@ -25,6 +25,8 @@ import {
   selectApplying,
   selectApplySuccess,
   selectApplicationError,
+  selectAppliedStatusMap,
+  selectCheckingApplied,
 } from '../../../applications/store';
 
 @Component({
@@ -49,6 +51,8 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   readonly applying = this.store.selectSignal(selectApplying);
   readonly applySuccess = this.store.selectSignal(selectApplySuccess);
   readonly applyError = this.store.selectSignal(selectApplicationError);
+  readonly appliedStatusMap = this.store.selectSignal(selectAppliedStatusMap);
+  readonly checkingApplied = this.store.selectSignal(selectCheckingApplied);
 
   readonly contractLabels = OFFER_CONTRACT_TYPE_LABELS;
   readonly statusLabels = OFFER_STATUS_LABELS;
@@ -56,6 +60,16 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 
   readonly isLoggedIn = computed(() => !!this.authService.currentUser());
   readonly userId = computed(() => this.authService.currentUser()?.id ?? '');
+  readonly currentRole = computed(() => this.authService.currentUser()?.role ?? 'GUEST');
+  readonly isGuest = computed(() => !this.isLoggedIn());
+  readonly isCandidateRole = computed(() => this.currentRole() === 'CANDIDATE');
+  readonly canSeeApplyCta = computed(() => this.isGuest() || this.isCandidateRole());
+  readonly hasApplied = computed(() => {
+    const offerId = this.offer()?.id;
+    if (!offerId) return false;
+    return !!this.appliedStatusMap()[offerId];
+  });
+  readonly shouldShowAlreadyApplied = computed(() => this.isCandidateRole() && this.hasApplied());
 
   // Apply modal state
   isApplyModalOpen = signal(false);
@@ -70,6 +84,15 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   /** Whether the candidate has a CV on their profile */
   readonly hasCv = computed(() => !!this.candidateProfile()?.cvOriginalName);
   readonly cvFileName = computed(() => this.candidateProfile()?.cvOriginalName ?? '');
+
+  private readonly checkAppliedEffect = effect(() => {
+    const offerId = this.offer()?.id;
+    const userId = this.userId();
+    if (!offerId || !userId || !this.isCandidateRole()) {
+      return;
+    }
+    this.store.dispatch(ApplicationActions.checkApplied({ userId, offerId }));
+  });
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('offerId'));
@@ -90,8 +113,14 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   // ======================== Apply Flow ========================
 
   openApplyModal(): void {
+    if (!this.canSeeApplyCta()) {
+      return;
+    }
     if (!this.isLoggedIn()) {
       this.router.navigate(['/auth/login']);
+      return;
+    }
+    if (this.shouldShowAlreadyApplied()) {
       return;
     }
     this.coverLetter.set('');
@@ -109,6 +138,9 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 
   submitApplication(): void {
+    if (!this.isCandidateRole()) {
+      return;
+    }
     // Must have a CV
     if (!this.hasCv()) {
       this.cvError.set('Please upload your CV before applying.');

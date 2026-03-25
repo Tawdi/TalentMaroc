@@ -51,11 +51,11 @@ export class DashboardLayoutComponent {
       case 'CANDIDATE':
         return [
           { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-          { label: 'My Applications', icon: 'applications', route: '/dashboard/applications', badge: 3 },
-          { label: 'Saved Jobs', icon: 'bookmark', route: '/dashboard/saved-jobs', badge: 12 },
+          { label: 'My Applications', icon: 'applications', route: '/dashboard/applications' },
+          { label: 'Saved Jobs', icon: 'bookmark', route: '/dashboard/saved-jobs' },
           { label: 'My Profile', icon: 'profile', route: '/dashboard/profile' },
           { label: 'Resume Builder', icon: 'resume', route: '/dashboard/resume' },
-          { label: 'Messages', icon: 'message', route: '/dashboard/messages', badge: 5 },
+          { label: 'Messages', icon: 'message', route: '/dashboard/messages' },
         ];
 
       case 'COMPANY':

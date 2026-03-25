@@ -4,3 +4,4 @@ export * from './verify-email/verify-email';
 export * from './resend-verification/resend-verification';
 export * from './forgot-password/forgot-password';
 export * from './reset-password/reset-password';
+export * from './oauth2-redirect/oauth2-redirect';

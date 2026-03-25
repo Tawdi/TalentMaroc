@@ -60,6 +60,8 @@ export const selectApplying = createSelector(selectApplicationState, (s) => s.ap
 export const selectApplySuccess = createSelector(selectApplicationState, (s) => s.applySuccess);
 export const selectSaving = createSelector(selectApplicationState, (s) => s.saving);
 export const selectApplicationError = createSelector(selectApplicationState, (s) => s.error);
+export const selectAppliedStatusMap = createSelector(selectApplicationState, (s) => s.appliedStatus);
+export const selectCheckingApplied = createSelector(selectApplicationState, (s) => s.checkingApplied);
 
 // Re-exports
 export { ApplicationActions } from './application.actions';

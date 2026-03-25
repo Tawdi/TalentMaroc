@@ -162,6 +162,25 @@
   margin-bottom: 1rem;
 }
 
+.apply-disabled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.apply-disabled app-icon {
+  color: var(--text-tertiary);
+}
+
+.apply-hint {
+  margin-top: 0.5rem;
+  color: var(--text-tertiary);
+  font-size: 0.8125rem;
+}
+
 .sidebar-section {
   display: flex;
   flex-direction: column;

@@ -102,6 +102,10 @@ export const routes: Routes = [
         loadComponent: () => Promise.resolve(ResetPasswordComponent),
       },
       {
+        path: 'oauth2/callback',
+        loadComponent: () => import('./features/auth/oauth2-redirect/oauth2-redirect').then(m => m.OAuth2RedirectComponent),
+      },
+      {
         path: '',
         redirectTo: 'login',
         pathMatch: 'full',

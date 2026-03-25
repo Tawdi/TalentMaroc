@@ -103,21 +103,43 @@
         <!-- Apply CTA -->
         <app-ui-card>
           <div class="apply-card">
-            @if (applySuccess()) {
+            @if (!canSeeApplyCta()) {
+              <div class="apply-disabled">
+                <app-icon name="information-circle" size="lg" />
+                <h3>Apply as a candidate</h3>
+                <p>Switch to a candidate account to apply for opportunities.</p>
+              </div>
+            } @else if (applySuccess()) {
               <div class="apply-success">
                 <app-icon name="check" size="lg" />
                 <h3>Application Submitted!</h3>
                 <p>Your application has been submitted successfully. You can track it in your dashboard.</p>
               </div>
+            } @else if (shouldShowAlreadyApplied()) {
+              <app-ui-alert type="info" [dismissible]="false">
+                You have already applied for this offer.
+              </app-ui-alert>
             } @else {
               <h3>Interested in this position?</h3>
               <p>Apply now and take the next step in your career.</p>
               @if (applyError()) {
                 <app-ui-alert type="error" [dismissible]="false">{{ applyError() }}</app-ui-alert>
               }
-              <app-ui-button variant="primary" size="lg" [fullWidth]="true" (clicked)="openApplyModal()">
-                Apply Now
+              <app-ui-button
+                variant="primary"
+                size="lg"
+                [fullWidth]="true"
+                [disabled]="checkingApplied() || applying()"
+                (clicked)="openApplyModal()">
+                @if (checkingApplied()) {
+                  Checking...
+                } @else {
+                  Apply Now
+                }
               </app-ui-button>
+              @if (isGuest()) {
+                <p class="apply-hint">Create an account or log in to complete your application.</p>
+              }
             }
           </div>
         </app-ui-card>

@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import {
@@ -52,6 +52,8 @@ export class JobListingsComponent implements OnInit {
   readonly error = this.store.selectSignal(selectOfferError);
   readonly savedJobsEntities = this.store.selectSignal(selectSavedJobsEntities);
   readonly pendingOfferIds = this.store.selectSignal(selectSavedJobsPendingOfferIds);
+  readonly canSaveJobs = computed(() => this.authService.currentUser()?.role === 'CANDIDATE');
+  readonly isAuthenticated =   this.authService.isAuthenticated;
 
   readonly contractLabels = OFFER_CONTRACT_TYPE_LABELS;
   readonly contractOptions = [
@@ -121,6 +123,9 @@ export class JobListingsComponent implements OnInit {
       this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
+    if (user.role !== 'CANDIDATE') {
+      return;
+    }
 
     if (this.isOfferSaved(offer.id)) {
       this.store.dispatch(SavedJobsActions.removeJob({ userId: user.id, offerId: offer.id }));
@@ -131,7 +136,7 @@ export class JobListingsComponent implements OnInit {
 
   private loadSavedJobs(): void {
     const user = this.authService.currentUser();
-    if (!user) return;
+    if (!user || user.role !== 'CANDIDATE') return;
     this.store.dispatch(SavedJobsActions.loadSavedJobs({ userId: user.id }));
   }
 }
