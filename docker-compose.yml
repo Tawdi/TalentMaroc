@@ -1,0 +1,253 @@
+services:
+  discovery-server:
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8761/actuator/health || exit 1" ]
+      interval: 30s
+      retries: 3
+      start_period: 60s
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8888/actuator/health || exit 1" ]
+      interval: 30s
+      retries: 3
+      start_period: 60s
+    environment:
+      - EUREKA_HOST=discovery-server
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"    # AMQP protocol
+      - "15672:15672"  # Web UI → localhost:15672 (guest/guest)
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  job-board-auth-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: job_board_auth_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5434:5432"
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d job_board_auth_db" ]
+      interval: 10s
+      retries: 5
+
+  auth-user-service:
+    build:
+      context: ./services/auth-user
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      job-board-auth-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://job-board-auth-db:5432/job_board_auth_db
+      - SPRING_DATASOURCE_USERNAME=dev
+      - SPRING_DATASOURCE_PASSWORD=dev
+      - EUREKA_HOST=discovery-server
+      - RABBITMQ_HOST=rabbitmq
+      - JWT_SECRET=${JWT_SECRET}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+
+  job-board-candidate-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: job_board_candidate_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5435:5432"
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d job_board_candidate_db" ]
+      interval: 10s
+      retries: 5
+
+  candidate-profile-service:
+    build:
+      context: ./services/candidate-profile
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      job-board-candidate-db:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://job-board-candidate-db:5432/job_board_candidate_db
+      - SPRING_DATASOURCE_USERNAME=dev
+      - SPRING_DATASOURCE_PASSWORD=dev
+      - EUREKA_HOST=discovery-server
+    volumes:
+      - candidate-cv-uploads:/app/uploads/cv
+
+  job-board-company-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: job_board_company_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5436:5432"
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d job_board_company_db" ]
+      interval: 10s
+      retries: 5
+
+  company-offers-service:
+    build:
+      context: ./services/company-offers
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8091"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      job-board-company-db:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://job-board-company-db:5432/job_board_company_db
+      - SPRING_DATASOURCE_USERNAME=dev
+      - SPRING_DATASOURCE_PASSWORD=dev
+      - EUREKA_HOST=discovery-server
+
+  job-board-applications-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: job_board_applications_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5437:5432"
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d job_board_applications_db" ]
+      interval: 10s
+      retries: 5
+
+  applications-service:
+    build:
+      context: ./services/applications
+      dockerfile: Dockerfile
+    ports:
+      - "8092:8092"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      job-board-applications-db:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://job-board-applications-db:5432/job_board_applications_db
+      - SPRING_DATASOURCE_USERNAME=dev
+      - SPRING_DATASOURCE_PASSWORD=dev
+      - EUREKA_HOST=discovery-server
+
+  gateway-service:
+    build:
+      context: ./gateways/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    environment:
+      - EUREKA_HOST=discovery-server
+
+  job-board-notifications-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: job_board_notifications_db
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+    ports:
+      - "5438:5432"
+    networks:
+      - job-board-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U dev -d job_board_notifications_db" ]
+      interval: 10s
+      retries: 5
+
+  notifications-service:
+    build:
+      context: ./services/notifications
+      dockerfile: Dockerfile
+    ports:
+      - "8093:8093"
+    depends_on:
+      discovery-server:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      job-board-notifications-db:
+        condition: service_healthy
+    networks:
+      - job-board-net
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://job-board-notifications-db:5432/job_board_notifications_db
+      - SPRING_DATASOURCE_USERNAME=dev
+      - SPRING_DATASOURCE_PASSWORD=dev
+      - EUREKA_HOST=discovery-server
+      - RABBITMQ_HOST=rabbitmq
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+
+networks:
+  job-board-net:
+    driver: bridge
+
+volumes:
+  candidate-cv-uploads:
