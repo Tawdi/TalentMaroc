@@ -54,7 +54,7 @@ public class ApplicationService {
         try {
             offerServiceClient.incrementApplicationCount(request.getOfferId());
         } catch (Exception e) {
-            log.warn("Failed to increment application count for offer {}: {}", request.getOfferId(), e.getMessage());
+            log.warn("Failed to increment application count for offer {}", request.getOfferId(), e);
         }
 
         log.info("Application submitted: candidate '{}' applied to offer '{}' (offerId: {})",
@@ -64,6 +64,13 @@ public class ApplicationService {
         CandidateSummaryDTO candidate = fetchCandidate(candidateUserId).orElse(null);
 
         return mapper.toResponse(saved, offer, candidate);
+    }
+
+    /**
+     * Check if a candidate has already applied to a given offer.
+     */
+    public boolean hasApplied(String candidateUserId, Long offerId) {
+        return applicationRepository.existsByCandidateUserIdAndOfferId(candidateUserId, offerId);
     }
 
     /**

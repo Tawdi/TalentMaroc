@@ -170,8 +170,10 @@ public class OfferService {
         Offer offer = offerRepository.findById(offerId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Offer not found with id: " + offerId));
+        log.info("Incrementing application count for offer {} (current count: {})", offerId, offer.getApplicationsCount());
         offer.incrementApplications();
         offerRepository.save(offer);
+        log.info("Application count incremented for offer {} (new count: {})", offerId, offer.getApplicationsCount());
     }
 
     // ======================== DELETE ========================
@@ -212,6 +214,4 @@ public class OfferService {
         }
     }
 }
-
-
 

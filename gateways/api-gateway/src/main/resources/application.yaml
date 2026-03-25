@@ -35,6 +35,14 @@ spring:
                 - Path=/auth/**
               filters:
                 - StripPrefix=1
+                - name: AddRequestHeader
+                  args:
+                    name: X-Forwarded-Host
+                    value: "localhost:8080"
+                - name: AddRequestHeader
+                  args:
+                    name: X-Forwarded-Proto
+                    value: "http"
             - id: candidate-profile-service
               uri: lb://CANDIDATE-PROFILE-SERVICE
               predicates:

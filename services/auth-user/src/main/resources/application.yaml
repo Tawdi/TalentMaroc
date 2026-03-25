@@ -115,6 +115,7 @@ oauth2:
 
 server:
   port: 8081
+  forward-headers-strategy: framework
 
 eureka:
   instance:

@@ -34,3 +34,20 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://${EUREKA_HOST:localhost}:8761/eureka/
+
+feign:
+  httpclient:
+    hc5:
+      enabled: true
+    enabled: false
+  okhttp:
+    enabled: false
+  client:
+    config:
+      COMPANY-OFFERS-SERVICE:
+        loggerLevel: FULL
+
+
+logging:
+  level:
+    io.github.tawdi.jobboard.applications.client.OfferServiceClient: DEBUG

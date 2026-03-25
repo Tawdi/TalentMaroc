@@ -48,6 +48,16 @@ public class CandidateApplicationController {
                 ApiResponseDTO.success("Applications retrieved successfully", applications));
     }
 
+    @GetMapping("/offers/{offerId}/exists")
+    public ResponseEntity<ApiResponseDTO<Boolean>> hasApplied(
+            @PathVariable String userId,
+            @PathVariable Long offerId) {
+
+        boolean hasApplied = applicationService.hasApplied(userId, offerId);
+        return ResponseEntity.ok(
+                ApiResponseDTO.success("Application existence checked", hasApplied));
+    }
+
     // ======================== APPLICATION DETAIL ========================
 
     @GetMapping("/{applicationId}")
