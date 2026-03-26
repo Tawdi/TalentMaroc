@@ -53,6 +53,9 @@ class AuthServiceTest {
     @Mock
     private VerificationTokenService verificationTokenService;
 
+    @Mock
+    private NotificationProducerService notificationProducerService;
+
 
     @InjectMocks
     private AuthService authService;
@@ -372,7 +375,7 @@ class AuthServiceTest {
         // Assert
         verify(userRepository).findByEmail(email);
         verify(verificationTokenService).createPasswordResetToken(testUser);
-        // verify(emailService).sendPasswordResetEmail(testUser, resetToken.getToken());
+        verify(notificationProducerService).sendPasswordResetEmail(testUser.getId(),testUser.getEmail(), resetToken.getToken());
     }
 
     @Test
