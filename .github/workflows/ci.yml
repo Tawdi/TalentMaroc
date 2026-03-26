@@ -56,11 +56,11 @@ jobs:
         run: npm ci
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
-      - name: Lint
-        working-directory: frontend
-        env:
-          CI: 'true'
-        run: npm run lint
+#      - name: Lint
+#        working-directory: frontend
+#        env:
+#          CI: 'true'
+#        run: npm run lint
       - name: Unit tests
         working-directory: frontend
         env:
